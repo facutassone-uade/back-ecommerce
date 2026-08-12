@@ -1,0 +1,252 @@
+{
+	"info": {
+		"name": "e-commerce",
+		"description": "Colección de requests para la API REST del proyecto e-commerce (Spring Boot). Usa la variable {{baseUrl}} (por defecto http://localhost:8080).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "List products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "products" ]
+						}
+					}
+				},
+				{
+					"name": "Get product by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "products", "1" ]
+						}
+					}
+				},
+				{
+					"name": "Create product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Laptop\",\n    \"price\": 999.99\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "products" ]
+						}
+					}
+				},
+				{
+					"name": "Delete product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "products", "1" ]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Customers",
+			"item": [
+				{
+					"name": "List customers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/customers",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "customers" ]
+						}
+					}
+				},
+				{
+					"name": "Get customer by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/customers/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "customers", "1" ]
+						}
+					}
+				},
+				{
+					"name": "Create customer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Facundo\",\n    \"lastName\": \"Tassone\",\n    \"nationalId\": 123456789,\n    \"email\": \"ftassone@uade.com.ar\",\n    \"phone\": 12345678,\n    \"address\": \"Av siempre viva 742\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/customers",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "customers" ]
+						}
+					}
+				},
+				{
+					"name": "Delete customer",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/customers/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "customers", "1" ]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "List orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/orders",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "orders" ]
+						}
+					}
+				},
+				{
+					"name": "Get order by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/orders/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "orders", "1" ]
+						}
+					}
+				},
+				{
+					"name": "Create order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer\": { \"id\": 1 },\n    \"date\": \"2026-08-11\",\n    \"total\": 999.99,\n    \"paid\": true,\n    \"paymentMethod\": \"credit_card\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/orders",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "orders" ]
+						}
+					}
+				},
+				{
+					"name": "Delete order",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/orders/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "orders", "1" ]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Carts",
+			"item": [
+				{
+					"name": "List carts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/carts",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "carts" ]
+						}
+					}
+				},
+				{
+					"name": "Get cart by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/carts/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "carts", "1" ]
+						}
+					}
+				},
+				{
+					"name": "Create cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer\": { \"id\": 1 },\n    \"date\": \"2026-08-11\",\n    \"quantity\": 3,\n    \"deliveryDate\": \"2026-08-15\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/carts",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "carts" ]
+						}
+					}
+				},
+				{
+					"name": "Delete cart",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/carts/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "carts", "1" ]
+						}
+					}
+				}
+			]
+		}
+	]
+}
