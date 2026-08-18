@@ -6,9 +6,21 @@ API REST de un e-commerce hecha con Spring Boot. Proyecto de la cátedra Aplicac
 
 - Java 17
 - Spring Boot (Web, Data JPA, DevTools)
-- H2 (base en memoria para desarrollo)
+- MySQL 8 (vía Docker)
 - Lombok
 - Maven (con wrapper, no hace falta tener Maven instalado)
+
+## Base de datos
+
+Levantar MySQL en Docker antes de correr la app:
+
+```bash
+docker run --name mysql-open -e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_DATABASE=ecommerce_db -p 3306:3306 -d mysql:8.0
+```
+
+Config en `application.properties`: host `localhost:3306`, base `ecommerce_db`, user `root`, sin password. Hibernate crea/actualiza las tablas solo (`ddl-auto=update`).
+
+Si el contenedor ya existe y solo hace falta prenderlo de nuevo: `docker start mysql-open`.
 
 ## Cómo levantarlo
 
@@ -19,18 +31,6 @@ API REST de un e-commerce hecha con Spring Boot. Proyecto de la cátedra Aplicac
 También se puede correr desde VSCode con el **Spring Boot Dashboard** o el botón `Run` sobre `ECommerceApplication.java`.
 
 La app queda en `http://localhost:8080`.
-
-## Base de datos
-
-H2 en memoria, se resetea cada vez que se para la app. Consola web en:
-
-```
-http://localhost:8080/h2-console
-```
-
-- JDBC URL: `jdbc:h2:mem:testdb`
-- User: `sa`
-- Password: (vacío)
 
 ## Endpoints
 
