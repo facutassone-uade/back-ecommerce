@@ -8,11 +8,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.uade.e_commerce.model.Cart;
+import com.uade.e_commerce.dto.CartRequestDTO;
+import com.uade.e_commerce.dto.CartResponseDTO;
 import com.uade.e_commerce.service.CartService;
 
 @RestController
@@ -26,13 +28,13 @@ public class CartController {
     }
 
     @GetMapping
-    public List<Cart> list() {
+    public List<CartResponseDTO> list() {
         return cartService.list();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Cart> findById(@PathVariable Long id) {
-        Cart cart = cartService.findById(id);
+    public ResponseEntity<CartResponseDTO> findById(@PathVariable Long id) {
+        CartResponseDTO cart = cartService.findResponseById(id);
         if (cart == null) {
             return ResponseEntity.notFound().build();
         }
@@ -40,9 +42,21 @@ public class CartController {
     }
 
     @PostMapping
-    public ResponseEntity<Cart> create(@RequestBody Cart cart) {
-        Cart created = cartService.create(cart);
+    public ResponseEntity<CartResponseDTO> create(@RequestBody CartRequestDTO cartRequestDTO) {
+        CartResponseDTO created = cartService.save(cartRequestDTO);
+        if (created == null) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CartResponseDTO> update(@PathVariable Long id, @RequestBody CartRequestDTO cartRequestDTO) {
+        CartResponseDTO updated = cartService.update(id, cartRequestDTO);
+        if (updated == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
