@@ -14,12 +14,8 @@ import com.uade.e_commerce.order.dto.OrderResponseDTO;
 import com.uade.e_commerce.product.dto.ProductResponseDTO;
 import com.uade.e_commerce.customer.Address;
 import com.uade.e_commerce.customer.Customer;
-import com.uade.e_commerce.order.Order;
-import com.uade.e_commerce.order.OrderItem;
 import com.uade.e_commerce.product.Product;
 import com.uade.e_commerce.customer.CustomerRepository;
-import com.uade.e_commerce.order.OrderItemRepository;
-import com.uade.e_commerce.order.OrderRepository;
 import com.uade.e_commerce.product.ProductRepository;
 
 @Service

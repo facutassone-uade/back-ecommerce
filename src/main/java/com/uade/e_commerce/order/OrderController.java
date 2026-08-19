@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.uade.e_commerce.order.dto.OrderItemRequestDTO;
 import com.uade.e_commerce.order.dto.OrderRequestDTO;
 import com.uade.e_commerce.order.dto.OrderResponseDTO;
-import com.uade.e_commerce.order.OrderService;
 
 @RestController
 @RequestMapping("/api/orders")

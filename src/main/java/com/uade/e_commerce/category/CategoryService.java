@@ -7,8 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.uade.e_commerce.category.dto.CategoryRequestDTO;
 import com.uade.e_commerce.category.dto.CategoryResponseDTO;
-import com.uade.e_commerce.category.Category;
-import com.uade.e_commerce.category.CategoryRepository;
 
 @Service
 @Transactional

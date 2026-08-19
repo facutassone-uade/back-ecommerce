@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.e_commerce.customer.dto.CustomerRequestDTO;
 import com.uade.e_commerce.customer.dto.CustomerResponseDTO;
-import com.uade.e_commerce.customer.CustomerService;
 
 @RestController
 @RequestMapping("/api/customers")

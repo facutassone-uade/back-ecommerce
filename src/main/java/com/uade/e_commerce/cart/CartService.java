@@ -10,9 +10,7 @@ import com.uade.e_commerce.cart.dto.CartRequestDTO;
 import com.uade.e_commerce.cart.dto.CartResponseDTO;
 import com.uade.e_commerce.customer.dto.CustomerSummaryDTO;
 import com.uade.e_commerce.customer.Address;
-import com.uade.e_commerce.cart.Cart;
 import com.uade.e_commerce.customer.Customer;
-import com.uade.e_commerce.cart.CartRepository;
 import com.uade.e_commerce.customer.CustomerRepository;
 
 @Service

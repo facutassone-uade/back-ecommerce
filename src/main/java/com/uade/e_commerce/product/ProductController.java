@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.e_commerce.product.dto.ProductRequestDTO;
 import com.uade.e_commerce.product.dto.ProductResponseDTO;
-import com.uade.e_commerce.product.ProductService;
 
 @RestController
 @RequestMapping("/api/products")

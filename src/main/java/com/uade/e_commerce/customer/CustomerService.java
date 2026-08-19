@@ -8,9 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.uade.e_commerce.customer.dto.AddressDTO;
 import com.uade.e_commerce.customer.dto.CustomerRequestDTO;
 import com.uade.e_commerce.customer.dto.CustomerResponseDTO;
-import com.uade.e_commerce.customer.Address;
-import com.uade.e_commerce.customer.Customer;
-import com.uade.e_commerce.customer.CustomerRepository;
 
 @Service
 @Transactional

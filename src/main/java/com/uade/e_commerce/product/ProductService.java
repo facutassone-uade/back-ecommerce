@@ -10,9 +10,7 @@ import com.uade.e_commerce.category.dto.CategoryResponseDTO;
 import com.uade.e_commerce.product.dto.ProductRequestDTO;
 import com.uade.e_commerce.product.dto.ProductResponseDTO;
 import com.uade.e_commerce.category.Category;
-import com.uade.e_commerce.product.Product;
 import com.uade.e_commerce.category.CategoryRepository;
-import com.uade.e_commerce.product.ProductRepository;
 
 @Service
 @Transactional

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.e_commerce.category.dto.CategoryRequestDTO;
 import com.uade.e_commerce.category.dto.CategoryResponseDTO;
-import com.uade.e_commerce.category.CategoryService;
 
 @RestController
 @RequestMapping("/api/categories")

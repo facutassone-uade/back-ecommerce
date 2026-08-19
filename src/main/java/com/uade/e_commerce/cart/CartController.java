@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.e_commerce.cart.dto.CartRequestDTO;
 import com.uade.e_commerce.cart.dto.CartResponseDTO;
-import com.uade.e_commerce.cart.CartService;
 
 @RestController
 @RequestMapping("/api/carts")
