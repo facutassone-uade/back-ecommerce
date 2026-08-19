@@ -1,6 +1,6 @@
 package com.uade.e_commerce.cart.dto;
 
-import java.time.LocalDate;
+import com.uade.e_commerce.product.dto.ProductResponseDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,11 +11,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartRequestDTO {
+public class CartItemResponseDTO {
 
-    private Long customerId;
+    private Long id;
 
-    private LocalDate date;
+    private ProductResponseDTO product;
 
-    private LocalDate deliveryDate;
+    private Integer quantity;
 }

@@ -101,7 +101,7 @@ public class OrderService {
         item.setOrder(order);
         item.setProduct(product);
         item.setQuantity(orderItemRequestDTO.getQuantity());
-        orderItemRepository.save(item);
+        orderItemRepository.saveAndFlush(item);
 
         Order refreshed = orderRepository.findById(orderId).orElse(order);
         return toResponseDTO(refreshed);
@@ -113,6 +113,7 @@ public class OrderService {
             return null;
         }
         orderItemRepository.deleteById(itemId);
+        orderItemRepository.flush();
         Order refreshed = orderRepository.findById(orderId).orElse(order);
         return toResponseDTO(refreshed);
     }

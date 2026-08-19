@@ -1,10 +1,7 @@
 package com.uade.e_commerce.cart;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.uade.e_commerce.customer.Customer;
+import com.uade.e_commerce.product.Product;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -13,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,20 +20,20 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Cart {
+public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", foreignKey = @ForeignKey(name = "fk_cart_customer"))
-    private Customer customer;
-
-    private LocalDate date;
-    private LocalDate deliveryDate;
-
     @JsonIgnore
-    @OneToMany(mappedBy = "cart")
-    private List<CartItem> items;
+    @ManyToOne
+    @JoinColumn(name = "cart_id", foreignKey = @ForeignKey(name = "fk_cart_item_cart"))
+    private Cart cart;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", foreignKey = @ForeignKey(name = "fk_cart_item_product"))
+    private Product product;
+
+    private Integer quantity;
 }

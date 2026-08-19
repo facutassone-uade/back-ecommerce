@@ -1,6 +1,7 @@
 package com.uade.e_commerce.cart.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.uade.e_commerce.customer.dto.CustomerSummaryDTO;
 
@@ -21,7 +22,7 @@ public class CartResponseDTO {
 
     private LocalDate date;
 
-    private Number quantity;
-
     private LocalDate deliveryDate;
+
+    private List<CartItemResponseDTO> items;
 }

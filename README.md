@@ -10,6 +10,62 @@ API REST de un e-commerce hecha con Spring Boot. Proyecto de la cátedra Aplicac
 - Lombok
 - Maven (con wrapper, no hace falta tener Maven instalado)
 
+## Estructura de carpetas
+
+El código está organizado por entidad (package-by-feature) en vez de por capa técnica. Cada paquete agrupa todo lo relacionado a esa entidad, con sus DTOs en una subcarpeta `dto/`:
+
+```
+src/main/java/com/uade/e_commerce/
+├── ECommerceApplication.java
+├── product/
+│   ├── Product.java
+│   ├── ProductRepository.java
+│   ├── ProductService.java
+│   ├── ProductController.java
+│   └── dto/
+│       ├── ProductRequestDTO.java
+│       └── ProductResponseDTO.java
+├── category/
+│   ├── Category.java
+│   ├── CategoryRepository.java
+│   ├── CategoryService.java
+│   ├── CategoryController.java
+│   └── dto/
+│       ├── CategoryRequestDTO.java
+│       └── CategoryResponseDTO.java
+├── customer/
+│   ├── Customer.java
+│   ├── Address.java          (embeddable)
+│   ├── CustomerRepository.java
+│   ├── CustomerService.java
+│   ├── CustomerController.java
+│   └── dto/
+│       ├── CustomerRequestDTO.java
+│       ├── CustomerResponseDTO.java
+│       ├── CustomerSummaryDTO.java   (usado por order/ y cart/ al anidar el customer)
+│       └── AddressDTO.java
+├── order/
+│   ├── Order.java
+│   ├── OrderItem.java
+│   ├── OrderRepository.java
+│   ├── OrderItemRepository.java
+│   ├── OrderService.java
+│   ├── OrderController.java
+│   └── dto/
+│       ├── OrderRequestDTO.java
+│       ├── OrderResponseDTO.java
+│       ├── OrderItemRequestDTO.java
+│       └── OrderItemResponseDTO.java
+└── cart/
+    ├── Cart.java
+    ├── CartRepository.java
+    ├── CartService.java
+    ├── CartController.java
+    └── dto/
+        ├── CartRequestDTO.java
+        └── CartResponseDTO.java
+```
+
 ## Base de datos
 
 Levantar MySQL en Docker antes de correr la app:
