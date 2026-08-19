@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.uade.e_commerce.cart.dto.CartCheckoutRequestDTO;
 import com.uade.e_commerce.cart.dto.CartItemRequestDTO;
 import com.uade.e_commerce.cart.dto.CartRequestDTO;
 import com.uade.e_commerce.cart.dto.CartResponseDTO;
+import com.uade.e_commerce.order.dto.OrderResponseDTO;
 
 @RestController
 @RequestMapping("/api/carts")
@@ -90,5 +92,14 @@ public class CartController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(updated);
+    }
+
+    @PostMapping("/{id}/checkout")
+    public ResponseEntity<OrderResponseDTO> checkout(@PathVariable Long id, @RequestBody CartCheckoutRequestDTO checkoutRequestDTO) {
+        OrderResponseDTO order = cartService.checkout(id, checkoutRequestDTO);
+        if (order == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 }

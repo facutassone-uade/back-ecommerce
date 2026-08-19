@@ -1,7 +1,7 @@
 {
 	"info": {
 		"name": "e-commerce",
-		"description": "Colección de requests para la API REST del proyecto e-commerce (Spring Boot). Usa la variable {{baseUrl}} (por defecto http://localhost:8080).",
+		"description": "Colección de requests para la API REST del proyecto e-commerce (Spring Boot). Usa la variable {{baseUrl}} (por defecto http://localhost:8080). Los ids usados en las URLs de ejemplo (1, 2, etc.) son orientativos: reemplazar por los ids reales devueltos al crear cada recurso.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [
@@ -48,12 +48,30 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Laptop\",\n    \"price\": 999.99\n}"
+							"raw": "{\n    \"name\": \"Laptop\",\n    \"description\": \"Laptop 15 pulgadas\",\n    \"price\": 999.99,\n    \"stock\": 10\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/products",
 							"host": [ "{{baseUrl}}" ],
 							"path": [ "api", "products" ]
+						}
+					}
+				},
+				{
+					"name": "Update product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Laptop\",\n    \"description\": \"Laptop 15 pulgadas - actualizada\",\n    \"price\": 949.99,\n    \"stock\": 8\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "products", "1" ]
 						}
 					}
 				},
@@ -66,6 +84,107 @@
 							"raw": "{{baseUrl}}/api/products/1",
 							"host": [ "{{baseUrl}}" ],
 							"path": [ "api", "products", "1" ]
+						}
+					}
+				},
+				{
+					"name": "Add category to product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/1/categories/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "products", "1", "categories", "1" ]
+						}
+					}
+				},
+				{
+					"name": "Remove category from product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/1/categories/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "products", "1", "categories", "1" ]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "List categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/categories",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "categories" ]
+						}
+					}
+				},
+				{
+					"name": "Get category by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/categories/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "categories", "1" ]
+						}
+					}
+				},
+				{
+					"name": "Create category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Electronica\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/categories",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "categories" ]
+						}
+					}
+				},
+				{
+					"name": "Update category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Electronica y Accesorios\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/categories/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "categories", "1" ]
+						}
+					}
+				},
+				{
+					"name": "Delete category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/categories/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "categories", "1" ]
 						}
 					}
 				}
@@ -99,7 +218,7 @@
 					}
 				},
 				{
-					"name": "Create customer",
+					"name": "Create customer (registro)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -107,12 +226,30 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Facundo\",\n    \"lastName\": \"Tassone\",\n    \"nationalId\": 123456789,\n    \"email\": \"ftassone@uade.com.ar\",\n    \"phone\": 12345678,\n    \"address\": \"Av siempre viva 742\"\n}"
+							"raw": "{\n    \"name\": \"Facundo\",\n    \"lastName\": \"Tassone\",\n    \"nationalId\": 123456789,\n    \"email\": \"ftassone@uade.com.ar\",\n    \"phone\": 12345678,\n    \"address\": {\n        \"street\": \"Av siempre viva 742\",\n        \"city\": \"CABA\",\n        \"zipCode\": \"1000\",\n        \"country\": \"Argentina\"\n    },\n    \"username\": \"ftassone\",\n    \"password\": \"1234\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/customers",
 							"host": [ "{{baseUrl}}" ],
 							"path": [ "api", "customers" ]
+						}
+					}
+				},
+				{
+					"name": "Update customer",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Facundo\",\n    \"lastName\": \"Tassone\",\n    \"nationalId\": 123456789,\n    \"email\": \"ftassone@uade.com.ar\",\n    \"phone\": 12345678,\n    \"address\": {\n        \"street\": \"Otra calle 123\",\n        \"city\": \"CABA\",\n        \"zipCode\": \"1000\",\n        \"country\": \"Argentina\"\n    },\n    \"username\": \"ftassone\",\n    \"password\": \"1234\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/customers/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "customers", "1" ]
 						}
 					}
 				},
@@ -166,12 +303,30 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customer\": { \"id\": 1 },\n    \"date\": \"2026-08-11\",\n    \"total\": 999.99,\n    \"paid\": true,\n    \"paymentMethod\": \"credit_card\"\n}"
+							"raw": "{\n    \"customerId\": 1,\n    \"date\": \"2026-08-18\",\n    \"total\": 999.99,\n    \"paid\": true,\n    \"paymentMethod\": \"credit_card\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/orders",
 							"host": [ "{{baseUrl}}" ],
 							"path": [ "api", "orders" ]
+						}
+					}
+				},
+				{
+					"name": "Update order",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerId\": 1,\n    \"date\": \"2026-08-18\",\n    \"total\": 999.99,\n    \"paid\": true,\n    \"paymentMethod\": \"debit_card\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/orders/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "orders", "1" ]
 						}
 					}
 				},
@@ -184,6 +339,36 @@
 							"raw": "{{baseUrl}}/api/orders/1",
 							"host": [ "{{baseUrl}}" ],
 							"path": [ "api", "orders", "1" ]
+						}
+					}
+				},
+				{
+					"name": "Add item to order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"productId\": 1,\n    \"quantity\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/orders/1/items",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "orders", "1", "items" ]
+						}
+					}
+				},
+				{
+					"name": "Remove item from order",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/orders/1/items/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "orders", "1", "items", "1" ]
 						}
 					}
 				}
@@ -225,12 +410,30 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"customer\": { \"id\": 1 },\n    \"date\": \"2026-08-11\",\n    \"quantity\": 3,\n    \"deliveryDate\": \"2026-08-15\"\n}"
+							"raw": "{\n    \"customerId\": 1,\n    \"date\": \"2026-08-18\",\n    \"deliveryDate\": \"2026-08-22\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/carts",
 							"host": [ "{{baseUrl}}" ],
 							"path": [ "api", "carts" ]
+						}
+					}
+				},
+				{
+					"name": "Update cart",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerId\": 1,\n    \"date\": \"2026-08-18\",\n    \"deliveryDate\": \"2026-08-25\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/carts/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "carts", "1" ]
 						}
 					}
 				},
@@ -244,6 +447,67 @@
 							"host": [ "{{baseUrl}}" ],
 							"path": [ "api", "carts", "1" ]
 						}
+					}
+				},
+				{
+					"name": "Add item to cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"productId\": 1,\n    \"quantity\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/carts/1/items",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "carts", "1", "items" ]
+						}
+					}
+				},
+				{
+					"name": "Remove item from cart",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/carts/1/items/1",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "carts", "1", "items", "1" ]
+						}
+					}
+				},
+				{
+					"name": "Clear cart (vaciar)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/carts/1/items",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "carts", "1", "items" ]
+						}
+					}
+				},
+				{
+					"name": "Checkout cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"paymentMethod\": \"credit_card\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/carts/1/checkout",
+							"host": [ "{{baseUrl}}" ],
+							"path": [ "api", "carts", "1", "checkout" ]
+						},
+						"description": "Valida stock de cada item del carrito, lo descuenta, crea la Order correspondiente y vacia el carrito. Devuelve 400 si el carrito esta vacio o no hay stock suficiente."
 					}
 				}
 			]
