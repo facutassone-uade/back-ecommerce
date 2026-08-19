@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.e_commerce.dto.ProductRequestDTO;
 import com.uade.e_commerce.dto.ProductResponseDTO;
-import com.uade.e_commerce.model.Product;
 import com.uade.e_commerce.service.ProductService;
 
 @RestController
@@ -29,13 +28,13 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> list() {
+    public List<ProductResponseDTO> list() {
         return productService.list();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> findById(@PathVariable Long id) {
-        Product product = productService.findById(id);
+    public ResponseEntity<ProductResponseDTO> findById(@PathVariable Long id) {
+        ProductResponseDTO product = productService.findResponseById(id);
         if (product == null) {
             return ResponseEntity.notFound().build();
         }
@@ -64,8 +63,8 @@ public class ProductController {
     }
 
     @PostMapping("/{id}/categories/{categoryId}")
-    public ResponseEntity<Product> addCategory(@PathVariable Long id, @PathVariable Long categoryId) {
-        Product updated = productService.addCategory(id, categoryId);
+    public ResponseEntity<ProductResponseDTO> addCategory(@PathVariable Long id, @PathVariable Long categoryId) {
+        ProductResponseDTO updated = productService.addCategory(id, categoryId);
         if (updated == null) {
             return ResponseEntity.notFound().build();
         }
@@ -73,8 +72,8 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}/categories/{categoryId}")
-    public ResponseEntity<Product> removeCategory(@PathVariable Long id, @PathVariable Long categoryId) {
-        Product updated = productService.removeCategory(id, categoryId);
+    public ResponseEntity<ProductResponseDTO> removeCategory(@PathVariable Long id, @PathVariable Long categoryId) {
+        ProductResponseDTO updated = productService.removeCategory(id, categoryId);
         if (updated == null) {
             return ResponseEntity.notFound().build();
         }

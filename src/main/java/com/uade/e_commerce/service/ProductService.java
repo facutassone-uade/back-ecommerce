@@ -1,10 +1,12 @@
 package com.uade.e_commerce.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.uade.e_commerce.dto.CategoryResponseDTO;
 import com.uade.e_commerce.dto.ProductRequestDTO;
 import com.uade.e_commerce.dto.ProductResponseDTO;
 import com.uade.e_commerce.model.Category;
@@ -24,16 +26,22 @@ public class ProductService {
         this.categoryRepository = categoryRepository;
     }
 
-    public List<Product> list() {
-        return productRepository.findAll();
-    }
-
-    public Product findById(Long id) {
-        return productRepository.findById(id).orElse(null);
-    }
-
     public void delete(Long id) {
         productRepository.deleteById(id);
+    }
+
+    public List<ProductResponseDTO> list() {
+        return productRepository.findAll().stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
+
+    public ProductResponseDTO findResponseById(Long id) {
+        Product product = productRepository.findById(id).orElse(null);
+        if (product == null) {
+            return null;
+        }
+        return toResponseDTO(product);
     }
 
     public ProductResponseDTO save(ProductRequestDTO productRequestDTO) {
@@ -44,15 +52,7 @@ public class ProductService {
         product.setStock(productRequestDTO.getStock());
 
         Product saved = productRepository.save(product);
-
-        ProductResponseDTO responseDTO = new ProductResponseDTO();
-        responseDTO.setId(saved.getId());
-        responseDTO.setName(saved.getName());
-        responseDTO.setDescription(saved.getDescription());
-        responseDTO.setPrice(saved.getPrice());
-        responseDTO.setStock(saved.getStock());
-
-        return responseDTO;
+        return toResponseDTO(saved);
     }
 
     public ProductResponseDTO update(Long id, ProductRequestDTO productRequestDTO) {
@@ -66,38 +66,54 @@ public class ProductService {
         product.setStock(productRequestDTO.getStock());
 
         Product saved = productRepository.save(product);
-
-        ProductResponseDTO responseDTO = new ProductResponseDTO();
-        responseDTO.setId(saved.getId());
-        responseDTO.setName(saved.getName());
-        responseDTO.setDescription(saved.getDescription());
-        responseDTO.setPrice(saved.getPrice());
-        responseDTO.setStock(saved.getStock());
-
-        return responseDTO;
+        return toResponseDTO(saved);
     }
 
-    public Product addCategory(Long productId, Long categoryId) {
+    public ProductResponseDTO addCategory(Long productId, Long categoryId) {
         Product product = productRepository.findById(productId).orElse(null);
         Category category = categoryRepository.findById(categoryId).orElse(null);
         if (product == null || category == null) {
             return null;
         }
         if (product.getCategories() == null) {
-            product.setCategories(new java.util.ArrayList<>());
+            product.setCategories(new ArrayList<>());
         }
         if (!product.getCategories().contains(category)) {
             product.getCategories().add(category);
         }
-        return productRepository.save(product);
+        Product saved = productRepository.save(product);
+        return toResponseDTO(saved);
     }
 
-    public Product removeCategory(Long productId, Long categoryId) {
+    public ProductResponseDTO removeCategory(Long productId, Long categoryId) {
         Product product = productRepository.findById(productId).orElse(null);
         if (product == null || product.getCategories() == null) {
             return null;
         }
         product.getCategories().removeIf(category -> category.getId().equals(categoryId));
-        return productRepository.save(product);
+        Product saved = productRepository.save(product);
+        return toResponseDTO(saved);
+    }
+
+    private ProductResponseDTO toResponseDTO(Product product) {
+        ProductResponseDTO responseDTO = new ProductResponseDTO();
+        responseDTO.setId(product.getId());
+        responseDTO.setName(product.getName());
+        responseDTO.setDescription(product.getDescription());
+        responseDTO.setPrice(product.getPrice());
+        responseDTO.setStock(product.getStock());
+        if (product.getCategories() != null) {
+            responseDTO.setCategories(product.getCategories().stream()
+                    .map(this::toCategoryResponseDTO)
+                    .toList());
+        }
+        return responseDTO;
+    }
+
+    private CategoryResponseDTO toCategoryResponseDTO(Category category) {
+        CategoryResponseDTO categoryDTO = new CategoryResponseDTO();
+        categoryDTO.setId(category.getId());
+        categoryDTO.setName(category.getName());
+        return categoryDTO;
     }
 }

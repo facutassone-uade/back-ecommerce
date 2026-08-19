@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.uade.e_commerce.dto.CategoryRequestDTO;
+import com.uade.e_commerce.dto.CategoryResponseDTO;
 import com.uade.e_commerce.model.Category;
 import com.uade.e_commerce.repository.CategoryRepository;
 
@@ -18,28 +20,45 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public List<Category> list() {
-        return categoryRepository.findAll();
+    public void delete(Long id) {
+        categoryRepository.deleteById(id);
     }
 
-    public Category findById(Long id) {
-        return categoryRepository.findById(id).orElse(null);
+    public List<CategoryResponseDTO> list() {
+        return categoryRepository.findAll().stream()
+                .map(this::toResponseDTO)
+                .toList();
     }
 
-    public Category create(Category category) {
-        return categoryRepository.save(category);
+    public CategoryResponseDTO findResponseById(Long id) {
+        Category category = categoryRepository.findById(id).orElse(null);
+        if (category == null) {
+            return null;
+        }
+        return toResponseDTO(category);
     }
 
-    public Category update(Long id, Category category) {
+    public CategoryResponseDTO save(CategoryRequestDTO categoryRequestDTO) {
+        Category category = new Category();
+        category.setName(categoryRequestDTO.getName());
+        Category saved = categoryRepository.save(category);
+        return toResponseDTO(saved);
+    }
+
+    public CategoryResponseDTO update(Long id, CategoryRequestDTO categoryRequestDTO) {
         Category existing = categoryRepository.findById(id).orElse(null);
         if (existing == null) {
             return null;
         }
-        existing.setName(category.getName());
-        return categoryRepository.save(existing);
+        existing.setName(categoryRequestDTO.getName());
+        Category saved = categoryRepository.save(existing);
+        return toResponseDTO(saved);
     }
 
-    public void delete(Long id) {
-        categoryRepository.deleteById(id);
+    private CategoryResponseDTO toResponseDTO(Category category) {
+        CategoryResponseDTO responseDTO = new CategoryResponseDTO();
+        responseDTO.setId(category.getId());
+        responseDTO.setName(category.getName());
+        return responseDTO;
     }
 }

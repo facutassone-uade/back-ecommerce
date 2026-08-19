@@ -1,7 +1,5 @@
 package com.uade.e_commerce.dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,17 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductResponseDTO {
+public class CategoryResponseDTO {
 
     private Long id;
 
     private String name;
-
-    private String description;
-
-    private Double price;
-
-    private Integer stock;
-
-    private List<CategoryResponseDTO> categories;
 }
