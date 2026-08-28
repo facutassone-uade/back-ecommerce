@@ -11,7 +11,7 @@ import com.uade.e_commerce.order.dto.OrderItemRequestDTO;
 import com.uade.e_commerce.order.dto.OrderItemResponseDTO;
 import com.uade.e_commerce.order.dto.OrderRequestDTO;
 import com.uade.e_commerce.order.dto.OrderResponseDTO;
-import com.uade.e_commerce.product.dto.ProductResponseDTO;
+import com.uade.e_commerce.product.dto.ProductSummaryDTO;
 import com.uade.e_commerce.customer.Address;
 import com.uade.e_commerce.customer.Customer;
 import com.uade.e_commerce.product.Product;
@@ -138,18 +138,17 @@ public class OrderService {
         OrderItemResponseDTO itemDTO = new OrderItemResponseDTO();
         itemDTO.setId(item.getId());
         itemDTO.setQuantity(item.getQuantity());
-        itemDTO.setProduct(toProductResponseDTO(item.getProduct()));
+        itemDTO.setProduct(toProductSummaryDTO(item.getProduct()));
         return itemDTO;
     }
 
-    private ProductResponseDTO toProductResponseDTO(Product product) {
+    private ProductSummaryDTO toProductSummaryDTO(Product product) {
         if (product == null) {
             return null;
         }
-        ProductResponseDTO productDTO = new ProductResponseDTO();
+        ProductSummaryDTO productDTO = new ProductSummaryDTO();
         productDTO.setId(product.getId());
         productDTO.setName(product.getName());
-        productDTO.setDescription(product.getDescription());
         productDTO.setPrice(product.getPrice());
         productDTO.setStock(product.getStock());
         return productDTO;
