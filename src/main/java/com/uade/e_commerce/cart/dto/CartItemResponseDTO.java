@@ -1,6 +1,6 @@
 package com.uade.e_commerce.cart.dto;
 
-import com.uade.e_commerce.product.dto.ProductResponseDTO;
+import com.uade.e_commerce.product.dto.ProductSummaryDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,7 @@ public class CartItemResponseDTO {
 
     private Long id;
 
-    private ProductResponseDTO product;
+    private ProductSummaryDTO product;
 
     private Integer quantity;
 }
