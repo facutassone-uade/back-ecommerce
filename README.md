@@ -17,6 +17,10 @@ El código está organizado por entidad (package-by-feature) en vez de por capa 
 ```
 src/main/java/com/uade/e_commerce/
 ├── ECommerceApplication.java
+├── common/                       (código transversal, no atado a una entidad)
+│   ├── GlobalExceptionHandler.java
+│   └── dto/
+│       └── ErrorResponseDTO.java
 ├── product/
 │   ├── Product.java
 │   ├── ProductRepository.java
@@ -24,7 +28,8 @@ src/main/java/com/uade/e_commerce/
 │   ├── ProductController.java
 │   └── dto/
 │       ├── ProductRequestDTO.java
-│       └── ProductResponseDTO.java
+│       ├── ProductResponseDTO.java
+│       └── ProductSummaryDTO.java   (usado por cart/ y order/ al anidar el product)
 ├── category/
 │   ├── Category.java
 │   ├── CategoryRepository.java
@@ -58,12 +63,17 @@ src/main/java/com/uade/e_commerce/
 │       └── OrderItemResponseDTO.java
 └── cart/
     ├── Cart.java
+    ├── CartItem.java
     ├── CartRepository.java
+    ├── CartItemRepository.java
     ├── CartService.java
     ├── CartController.java
     └── dto/
         ├── CartRequestDTO.java
-        └── CartResponseDTO.java
+        ├── CartResponseDTO.java
+        ├── CartItemRequestDTO.java
+        ├── CartItemResponseDTO.java
+        └── CartCheckoutRequestDTO.java
 ```
 
 ## Base de datos
@@ -97,11 +107,47 @@ Todos los recursos exponen el mismo patrón CRUD:
 | GET | `/api/{recurso}` | listar todos |
 | GET | `/api/{recurso}/{id}` | buscar por id |
 | POST | `/api/{recurso}` | crear |
+| PUT | `/api/{recurso}/{id}` | actualizar |
 | DELETE | `/api/{recurso}/{id}` | eliminar |
 
-Recursos disponibles: `products`, `customers`, `orders`, `carts`.
+Recursos disponibles: `products`, `categories`, `customers`, `orders`, `carts`.
 
-`orders` y `carts` referencian un cliente vía `"customer": { "id": 1 }`.
+Además hay endpoints para las sub-entidades:
+
+| Método | Ruta | Acción |
+|---|---|---|
+| POST | `/api/products/{id}/categories/{categoryId}` | asociar una categoría al producto |
+| DELETE | `/api/products/{id}/categories/{categoryId}` | quitar una categoría del producto |
+| POST | `/api/carts/{id}/items` | agregar un ítem al carrito |
+| DELETE | `/api/carts/{id}/items/{itemId}` | quitar un ítem del carrito |
+| DELETE | `/api/carts/{id}/items` | vaciar el carrito |
+| POST | `/api/carts/{id}/checkout` | convertir el carrito en una orden (descuenta stock) |
+| POST | `/api/orders/{id}/items` | agregar un ítem a la orden |
+| DELETE | `/api/orders/{id}/items/{itemId}` | quitar un ítem de la orden |
+
+`orders` y `carts` referencian un cliente vía `"customerId": 1` en el body.
+
+Cuando un producto va anidado dentro de un ítem de carrito o de orden se serializa como `ProductSummaryDTO` (solo `id`, `name`, `price`, `stock`). El `ProductResponseDTO` completo (con `description` y `categories`) se usa únicamente en los endpoints de `/api/products`.
+
+## Formato de errores
+
+Cuando algo falla, la API responde siempre con el mismo JSON (`ErrorResponseDTO`), armado de forma centralizada en `common/GlobalExceptionHandler`:
+
+```json
+{
+  "timestamp": "2026-08-28T16:26:20",
+  "status": 404,
+  "error": "Not Found",
+  "message": "El recurso solicitado no existe",
+  "path": "/api/nope"
+}
+```
+
+| Situación | Código |
+|---|---|
+| Ruta inexistente | 404 |
+| Body JSON inválido o parámetro con tipo incorrecto (ej. `/api/products/abc`) | 400 |
+| Error inesperado del servidor | 500 |
 
 ## Probar la API
 

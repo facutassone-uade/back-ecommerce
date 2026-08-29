@@ -24,7 +24,7 @@ import com.uade.e_commerce.order.dto.OrderItemResponseDTO;
 import com.uade.e_commerce.order.dto.OrderResponseDTO;
 import com.uade.e_commerce.product.Product;
 import com.uade.e_commerce.product.ProductRepository;
-import com.uade.e_commerce.product.dto.ProductResponseDTO;
+import com.uade.e_commerce.product.dto.ProductSummaryDTO;
 
 @Service
 @Transactional
@@ -207,7 +207,7 @@ public class CartService {
         OrderItemResponseDTO itemDTO = new OrderItemResponseDTO();
         itemDTO.setId(item.getId());
         itemDTO.setQuantity(item.getQuantity());
-        itemDTO.setProduct(toProductResponseDTO(item.getProduct()));
+        itemDTO.setProduct(toProductSummaryDTO(item.getProduct()));
         return itemDTO;
     }
 
@@ -229,18 +229,17 @@ public class CartService {
         CartItemResponseDTO itemDTO = new CartItemResponseDTO();
         itemDTO.setId(item.getId());
         itemDTO.setQuantity(item.getQuantity());
-        itemDTO.setProduct(toProductResponseDTO(item.getProduct()));
+        itemDTO.setProduct(toProductSummaryDTO(item.getProduct()));
         return itemDTO;
     }
 
-    private ProductResponseDTO toProductResponseDTO(Product product) {
+    private ProductSummaryDTO toProductSummaryDTO(Product product) {
         if (product == null) {
             return null;
         }
-        ProductResponseDTO productDTO = new ProductResponseDTO();
+        ProductSummaryDTO productDTO = new ProductSummaryDTO();
         productDTO.setId(product.getId());
         productDTO.setName(product.getName());
-        productDTO.setDescription(product.getDescription());
         productDTO.setPrice(product.getPrice());
         productDTO.setStock(product.getStock());
         return productDTO;
