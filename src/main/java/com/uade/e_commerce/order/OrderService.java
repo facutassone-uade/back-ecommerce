@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.uade.e_commerce.common.BusinessValidationException;
+import com.uade.e_commerce.common.ResourceNotFoundException;
 import com.uade.e_commerce.customer.dto.AddressDTO;
 import com.uade.e_commerce.customer.dto.CustomerSummaryDTO;
 import com.uade.e_commerce.order.dto.OrderItemRequestDTO;
@@ -46,18 +48,19 @@ public class OrderService {
     }
 
     public OrderResponseDTO findResponseById(Long id) {
-        Order order = orderRepository.findById(id).orElse(null);
-        if (order == null) {
-            return null;
-        }
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Orden", id));
         return toResponseDTO(order);
     }
 
     public OrderResponseDTO save(OrderRequestDTO orderRequestDTO) {
-        Customer customer = customerRepository.findById(orderRequestDTO.getCustomerId()).orElse(null);
-        if (customer == null) {
-            return null;
+        Long customerId = orderRequestDTO.getCustomerId();
+        if (customerId == null) {
+            throw new BusinessValidationException("No se puede crear la orden: customerId es obligatorio");
         }
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new BusinessValidationException(
+                        "No se puede crear la orden: el cliente con id " + customerId + " no existe"));
 
         Order order = new Order();
         order.setCustomer(customer);
@@ -71,14 +74,14 @@ public class OrderService {
     }
 
     public OrderResponseDTO update(Long id, OrderRequestDTO orderRequestDTO) {
-        Order existing = orderRepository.findById(id).orElse(null);
-        if (existing == null) {
-            return null;
+        Order existing = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Orden", id));
+        Long customerId = orderRequestDTO.getCustomerId();
+        if (customerId == null) {
+            throw new BusinessValidationException("No se puede actualizar la orden: customerId es obligatorio");
         }
-        Customer customer = customerRepository.findById(orderRequestDTO.getCustomerId()).orElse(null);
-        if (customer == null) {
-            return null;
-        }
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente", customerId));
 
         existing.setCustomer(customer);
         existing.setDate(orderRequestDTO.getDate());
@@ -91,11 +94,14 @@ public class OrderService {
     }
 
     public OrderResponseDTO addItem(Long orderId, OrderItemRequestDTO orderItemRequestDTO) {
-        Order order = orderRepository.findById(orderId).orElse(null);
-        Product product = productRepository.findById(orderItemRequestDTO.getProductId()).orElse(null);
-        if (order == null || product == null) {
-            return null;
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Orden", orderId));
+        Long productId = orderItemRequestDTO.getProductId();
+        if (productId == null) {
+            throw new BusinessValidationException("No se puede agregar el ítem: productId es obligatorio");
         }
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto", productId));
 
         OrderItem item = new OrderItem();
         item.setOrder(order);
@@ -108,10 +114,8 @@ public class OrderService {
     }
 
     public OrderResponseDTO removeItem(Long orderId, Long itemId) {
-        Order order = orderRepository.findById(orderId).orElse(null);
-        if (order == null) {
-            return null;
-        }
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Orden", orderId));
         orderItemRepository.deleteById(itemId);
         orderItemRepository.flush();
         Order refreshed = orderRepository.findById(orderId).orElse(order);

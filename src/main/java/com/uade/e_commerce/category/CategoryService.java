@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.uade.e_commerce.common.ResourceNotFoundException;
 import com.uade.e_commerce.category.dto.CategoryRequestDTO;
 import com.uade.e_commerce.category.dto.CategoryResponseDTO;
 
@@ -29,10 +30,8 @@ public class CategoryService {
     }
 
     public CategoryResponseDTO findResponseById(Long id) {
-        Category category = categoryRepository.findById(id).orElse(null);
-        if (category == null) {
-            return null;
-        }
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría", id));
         return toResponseDTO(category);
     }
 
@@ -44,10 +43,8 @@ public class CategoryService {
     }
 
     public CategoryResponseDTO update(Long id, CategoryRequestDTO categoryRequestDTO) {
-        Category existing = categoryRepository.findById(id).orElse(null);
-        if (existing == null) {
-            return null;
-        }
+        Category existing = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría", id));
         existing.setName(categoryRequestDTO.getName());
         Category saved = categoryRepository.save(existing);
         return toResponseDTO(saved);

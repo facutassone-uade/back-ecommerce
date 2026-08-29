@@ -19,6 +19,8 @@ src/main/java/com/uade/e_commerce/
 ├── ECommerceApplication.java
 ├── common/                       (código transversal, no atado a una entidad)
 │   ├── GlobalExceptionHandler.java
+│   ├── ResourceNotFoundException.java
+│   ├── BusinessValidationException.java
 │   └── dto/
 │       └── ErrorResponseDTO.java
 ├── product/
@@ -131,21 +133,41 @@ Cuando un producto va anidado dentro de un ítem de carrito o de orden se serial
 
 ## Formato de errores
 
-Cuando algo falla, la API responde siempre con el mismo JSON (`ErrorResponseDTO`), armado de forma centralizada en `common/GlobalExceptionHandler`:
+Cuando algo falla, la API responde siempre con el mismo JSON (`ErrorResponseDTO`), armado de forma centralizada en `common/GlobalExceptionHandler`.
+
+Para errores de negocio y recursos inexistentes se usan excepciones de dominio lanzadas desde los services:
+- `ResourceNotFoundException` → 404
+- `BusinessValidationException` → 400
+
+Ejemplo real de recurso inexistente:
 
 ```json
 {
-  "timestamp": "2026-08-28T16:26:20",
+  "timestamp": "2026-08-29T12:24:53.643716",
   "status": 404,
   "error": "Not Found",
-  "message": "El recurso solicitado no existe",
-  "path": "/api/nope"
+  "message": "Producto con id 999999 no existe",
+  "path": "/api/products/999999"
+}
+```
+
+Ejemplo real de validación de negocio:
+
+```json
+{
+  "timestamp": "2026-08-29T12:29:46.058319",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "No se puede crear el carrito: el cliente con id 999999 no existe",
+  "path": "/api/carts"
 }
 ```
 
 | Situación | Código |
 |---|---|
 | Ruta inexistente | 404 |
+| Recurso por id inexistente (ej. `/api/products/999999`) | 404 |
+| Regla de negocio inválida (ej. crear carrito con customer inexistente) | 400 |
 | Body JSON inválido o parámetro con tipo incorrecto (ej. `/api/products/abc`) | 400 |
 | Error inesperado del servidor | 500 |
 
