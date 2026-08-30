@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.uade.e_commerce.category.dto.CategoryResponseDTO;
+import com.uade.e_commerce.common.ResourceNotFoundException;
 import com.uade.e_commerce.product.dto.ProductRequestDTO;
 import com.uade.e_commerce.product.dto.ProductResponseDTO;
 import com.uade.e_commerce.category.Category;
@@ -35,10 +36,8 @@ public class ProductService {
     }
 
     public ProductResponseDTO findResponseById(Long id) {
-        Product product = productRepository.findById(id).orElse(null);
-        if (product == null) {
-            return null;
-        }
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
         return toResponseDTO(product);
     }
 
@@ -54,10 +53,8 @@ public class ProductService {
     }
 
     public ProductResponseDTO update(Long id, ProductRequestDTO productRequestDTO) {
-        Product product = productRepository.findById(id).orElse(null);
-        if (product == null) {
-            return null;
-        }
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
         product.setName(productRequestDTO.getName());
         product.setDescription(productRequestDTO.getDescription());
         product.setPrice(productRequestDTO.getPrice());
@@ -68,11 +65,10 @@ public class ProductService {
     }
 
     public ProductResponseDTO addCategory(Long productId, Long categoryId) {
-        Product product = productRepository.findById(productId).orElse(null);
-        Category category = categoryRepository.findById(categoryId).orElse(null);
-        if (product == null || category == null) {
-            return null;
-        }
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto", productId));
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría", categoryId));
         if (product.getCategories() == null) {
             product.setCategories(new ArrayList<>());
         }
@@ -84,9 +80,10 @@ public class ProductService {
     }
 
     public ProductResponseDTO removeCategory(Long productId, Long categoryId) {
-        Product product = productRepository.findById(productId).orElse(null);
-        if (product == null || product.getCategories() == null) {
-            return null;
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto", productId));
+        if (product.getCategories() == null) {
+            throw new ResourceNotFoundException("El producto con id " + productId + " no tiene categorías asociadas");
         }
         product.getCategories().removeIf(category -> category.getId().equals(categoryId));
         Product saved = productRepository.save(product);

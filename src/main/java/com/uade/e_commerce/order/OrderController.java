@@ -34,29 +34,17 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> findById(@PathVariable Long id) {
-        OrderResponseDTO order = orderService.findResponseById(id);
-        if (order == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok(orderService.findResponseById(id));
     }
 
     @PostMapping
     public ResponseEntity<OrderResponseDTO> create(@RequestBody OrderRequestDTO orderRequestDTO) {
-        OrderResponseDTO created = orderService.save(orderRequestDTO);
-        if (created == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(orderRequestDTO));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> update(@PathVariable Long id, @RequestBody OrderRequestDTO orderRequestDTO) {
-        OrderResponseDTO updated = orderService.update(id, orderRequestDTO);
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(orderService.update(id, orderRequestDTO));
     }
 
     @DeleteMapping("/{id}")
@@ -67,19 +55,11 @@ public class OrderController {
 
     @PostMapping("/{id}/items")
     public ResponseEntity<OrderResponseDTO> addItem(@PathVariable Long id, @RequestBody OrderItemRequestDTO orderItemRequestDTO) {
-        OrderResponseDTO updated = orderService.addItem(id, orderItemRequestDTO);
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(orderService.addItem(id, orderItemRequestDTO));
     }
 
     @DeleteMapping("/{id}/items/{itemId}")
     public ResponseEntity<OrderResponseDTO> removeItem(@PathVariable Long id, @PathVariable Long itemId) {
-        OrderResponseDTO updated = orderService.removeItem(id, itemId);
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(orderService.removeItem(id, itemId));
     }
 }

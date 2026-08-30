@@ -26,6 +26,18 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, "El recurso solicitado no existe", request);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleResourceNotFound(ResourceNotFoundException ex,
+            HttpServletRequest request) {
+        return build(HttpStatus.NOT_FOUND, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(BusinessValidationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBusinessValidation(BusinessValidationException ex,
+            HttpServletRequest request) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
     @ExceptionHandler({ HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class })
     public ResponseEntity<ErrorResponseDTO> handleBadRequest(Exception ex, HttpServletRequest request) {
         return build(HttpStatus.BAD_REQUEST, "La petición es inválida o está mal formada", request);

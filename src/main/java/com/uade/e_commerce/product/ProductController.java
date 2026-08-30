@@ -33,11 +33,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> findById(@PathVariable Long id) {
-        ProductResponseDTO product = productService.findResponseById(id);
-        if (product == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(product);
+        return ResponseEntity.ok(productService.findResponseById(id));
     }
 
     @PostMapping
@@ -48,11 +44,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> update(@PathVariable Long id, @RequestBody ProductRequestDTO productRequestDTO) {
-        ProductResponseDTO updated = productService.update(id, productRequestDTO);
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(productService.update(id, productRequestDTO));
     }
 
     @DeleteMapping("/{id}")
@@ -63,19 +55,11 @@ public class ProductController {
 
     @PostMapping("/{id}/categories/{categoryId}")
     public ResponseEntity<ProductResponseDTO> addCategory(@PathVariable Long id, @PathVariable Long categoryId) {
-        ProductResponseDTO updated = productService.addCategory(id, categoryId);
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(productService.addCategory(id, categoryId));
     }
 
     @DeleteMapping("/{id}/categories/{categoryId}")
     public ResponseEntity<ProductResponseDTO> removeCategory(@PathVariable Long id, @PathVariable Long categoryId) {
-        ProductResponseDTO updated = productService.removeCategory(id, categoryId);
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(productService.removeCategory(id, categoryId));
     }
 }
