@@ -33,11 +33,7 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CustomerResponseDTO> findById(@PathVariable Long id) {
-        CustomerResponseDTO customer = customerService.findResponseById(id);
-        if (customer == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(customer);
+        return ResponseEntity.ok(customerService.findResponseById(id));
     }
 
     @PostMapping
@@ -48,11 +44,7 @@ public class CustomerController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CustomerResponseDTO> update(@PathVariable Long id, @RequestBody CustomerRequestDTO customerRequestDTO) {
-        CustomerResponseDTO updated = customerService.update(id, customerRequestDTO);
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(customerService.update(id, customerRequestDTO));
     }
 
     @DeleteMapping("/{id}")

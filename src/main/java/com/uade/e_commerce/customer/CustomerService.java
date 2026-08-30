@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.uade.e_commerce.common.ResourceNotFoundException;
 import com.uade.e_commerce.customer.dto.AddressDTO;
 import com.uade.e_commerce.customer.dto.CustomerRequestDTO;
 import com.uade.e_commerce.customer.dto.CustomerResponseDTO;
@@ -34,10 +35,8 @@ public class CustomerService {
     }
 
     public CustomerResponseDTO findResponseById(Long id) {
-        Customer customer = customerRepository.findById(id).orElse(null);
-        if (customer == null) {
-            return null;
-        }
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente", id));
         return toResponseDTO(customer);
     }
 
@@ -49,10 +48,8 @@ public class CustomerService {
     }
 
     public CustomerResponseDTO update(Long id, CustomerRequestDTO customerRequestDTO) {
-        Customer existing = customerRepository.findById(id).orElse(null);
-        if (existing == null) {
-            return null;
-        }
+        Customer existing = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente", id));
         applyRequestDTO(existing, customerRequestDTO);
         Customer saved = customerRepository.save(existing);
         return toResponseDTO(saved);

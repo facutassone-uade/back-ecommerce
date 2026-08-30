@@ -11,6 +11,8 @@ import com.uade.e_commerce.cart.dto.CartItemRequestDTO;
 import com.uade.e_commerce.cart.dto.CartItemResponseDTO;
 import com.uade.e_commerce.cart.dto.CartRequestDTO;
 import com.uade.e_commerce.cart.dto.CartResponseDTO;
+import com.uade.e_commerce.common.BusinessValidationException;
+import com.uade.e_commerce.common.ResourceNotFoundException;
 import com.uade.e_commerce.customer.Address;
 import com.uade.e_commerce.customer.Customer;
 import com.uade.e_commerce.customer.CustomerRepository;
@@ -59,18 +61,19 @@ public class CartService {
     }
 
     public CartResponseDTO findResponseById(Long id) {
-        Cart cart = cartRepository.findById(id).orElse(null);
-        if (cart == null) {
-            return null;
-        }
+        Cart cart = cartRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Carrito", id));
         return toResponseDTO(cart);
     }
 
     public CartResponseDTO save(CartRequestDTO cartRequestDTO) {
-        Customer customer = customerRepository.findById(cartRequestDTO.getCustomerId()).orElse(null);
-        if (customer == null) {
-            return null;
+        Long customerId = cartRequestDTO.getCustomerId();
+        if (customerId == null) {
+            throw new BusinessValidationException("No se puede crear el carrito: customerId es obligatorio");
         }
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new BusinessValidationException(
+                        "No se puede crear el carrito: el cliente con id " + customerId + " no existe"));
 
         Cart cart = new Cart();
         cart.setCustomer(customer);
@@ -82,14 +85,14 @@ public class CartService {
     }
 
     public CartResponseDTO update(Long id, CartRequestDTO cartRequestDTO) {
-        Cart existing = cartRepository.findById(id).orElse(null);
-        if (existing == null) {
-            return null;
+        Cart existing = cartRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Carrito", id));
+        Long customerId = cartRequestDTO.getCustomerId();
+        if (customerId == null) {
+            throw new BusinessValidationException("No se puede actualizar el carrito: customerId es obligatorio");
         }
-        Customer customer = customerRepository.findById(cartRequestDTO.getCustomerId()).orElse(null);
-        if (customer == null) {
-            return null;
-        }
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente", customerId));
 
         existing.setCustomer(customer);
         existing.setDate(cartRequestDTO.getDate());
@@ -100,11 +103,14 @@ public class CartService {
     }
 
     public CartResponseDTO addItem(Long cartId, CartItemRequestDTO cartItemRequestDTO) {
-        Cart cart = cartRepository.findById(cartId).orElse(null);
-        Product product = productRepository.findById(cartItemRequestDTO.getProductId()).orElse(null);
-        if (cart == null || product == null) {
-            return null;
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Carrito", cartId));
+        Long productId = cartItemRequestDTO.getProductId();
+        if (productId == null) {
+            throw new BusinessValidationException("No se puede agregar el ítem: productId es obligatorio");
         }
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto", productId));
 
         CartItem item = new CartItem();
         item.setCart(cart);
@@ -117,10 +123,8 @@ public class CartService {
     }
 
     public CartResponseDTO removeItem(Long cartId, Long itemId) {
-        Cart cart = cartRepository.findById(cartId).orElse(null);
-        if (cart == null) {
-            return null;
-        }
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Carrito", cartId));
         cartItemRepository.deleteById(itemId);
         cartItemRepository.flush();
         Cart refreshed = cartRepository.findById(cartId).orElse(cart);
@@ -128,10 +132,8 @@ public class CartService {
     }
 
     public CartResponseDTO clearItems(Long cartId) {
-        Cart cart = cartRepository.findById(cartId).orElse(null);
-        if (cart == null) {
-            return null;
-        }
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Carrito", cartId));
         cartItemRepository.deleteAll(cartItemRepository.findByCartId(cartId));
         cartItemRepository.flush();
         Cart refreshed = cartRepository.findById(cartId).orElse(cart);
@@ -139,19 +141,20 @@ public class CartService {
     }
 
     public OrderResponseDTO checkout(Long cartId, CartCheckoutRequestDTO checkoutRequestDTO) {
-        Cart cart = cartRepository.findById(cartId).orElse(null);
-        if (cart == null) {
-            return null;
-        }
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new BusinessValidationException(
+                        "No se puede finalizar la compra: el carrito con id " + cartId + " no existe"));
 
         List<CartItem> items = cartItemRepository.findByCartId(cartId);
         if (items.isEmpty()) {
-            return null;
+            throw new BusinessValidationException("No se puede finalizar la compra: el carrito está vacío");
         }
 
         for (CartItem item : items) {
             if (item.getProduct().getStock() < item.getQuantity()) {
-                return null;
+                throw new BusinessValidationException(
+                        "No se puede finalizar la compra: stock insuficiente para el producto con id "
+                                + item.getProduct().getId());
             }
         }
 

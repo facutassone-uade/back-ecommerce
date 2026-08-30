@@ -36,29 +36,17 @@ public class CartController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CartResponseDTO> findById(@PathVariable Long id) {
-        CartResponseDTO cart = cartService.findResponseById(id);
-        if (cart == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(cart);
+        return ResponseEntity.ok(cartService.findResponseById(id));
     }
 
     @PostMapping
     public ResponseEntity<CartResponseDTO> create(@RequestBody CartRequestDTO cartRequestDTO) {
-        CartResponseDTO created = cartService.save(cartRequestDTO);
-        if (created == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cartService.save(cartRequestDTO));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CartResponseDTO> update(@PathVariable Long id, @RequestBody CartRequestDTO cartRequestDTO) {
-        CartResponseDTO updated = cartService.update(id, cartRequestDTO);
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(cartService.update(id, cartRequestDTO));
     }
 
     @DeleteMapping("/{id}")
@@ -69,37 +57,21 @@ public class CartController {
 
     @PostMapping("/{id}/items")
     public ResponseEntity<CartResponseDTO> addItem(@PathVariable Long id, @RequestBody CartItemRequestDTO cartItemRequestDTO) {
-        CartResponseDTO updated = cartService.addItem(id, cartItemRequestDTO);
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(cartService.addItem(id, cartItemRequestDTO));
     }
 
     @DeleteMapping("/{id}/items/{itemId}")
     public ResponseEntity<CartResponseDTO> removeItem(@PathVariable Long id, @PathVariable Long itemId) {
-        CartResponseDTO updated = cartService.removeItem(id, itemId);
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(cartService.removeItem(id, itemId));
     }
 
     @DeleteMapping("/{id}/items")
     public ResponseEntity<CartResponseDTO> clearItems(@PathVariable Long id) {
-        CartResponseDTO updated = cartService.clearItems(id);
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(cartService.clearItems(id));
     }
 
     @PostMapping("/{id}/checkout")
     public ResponseEntity<OrderResponseDTO> checkout(@PathVariable Long id, @RequestBody CartCheckoutRequestDTO checkoutRequestDTO) {
-        OrderResponseDTO order = cartService.checkout(id, checkoutRequestDTO);
-        if (order == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(order);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cartService.checkout(id, checkoutRequestDTO));
     }
 }

@@ -33,11 +33,7 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponseDTO> findById(@PathVariable Long id) {
-        CategoryResponseDTO category = categoryService.findResponseById(id);
-        if (category == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(category);
+        return ResponseEntity.ok(categoryService.findResponseById(id));
     }
 
     @PostMapping
@@ -48,11 +44,7 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponseDTO> update(@PathVariable Long id, @RequestBody CategoryRequestDTO categoryRequestDTO) {
-        CategoryResponseDTO updated = categoryService.update(id, categoryRequestDTO);
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(categoryService.update(id, categoryRequestDTO));
     }
 
     @DeleteMapping("/{id}")
