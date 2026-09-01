@@ -72,8 +72,7 @@ public class CartService {
             throw new BusinessValidationException("No se puede crear el carrito: customerId es obligatorio");
         }
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new BusinessValidationException(
-                        "No se puede crear el carrito: el cliente con id " + customerId + " no existe"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente", customerId));
 
         Cart cart = new Cart();
         cart.setCustomer(customer);
@@ -142,8 +141,7 @@ public class CartService {
 
     public OrderResponseDTO checkout(Long cartId, CartCheckoutRequestDTO checkoutRequestDTO) {
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new BusinessValidationException(
-                        "No se puede finalizar la compra: el carrito con id " + cartId + " no existe"));
+                .orElseThrow(() -> new ResourceNotFoundException("Carrito", cartId));
 
         List<CartItem> items = cartItemRepository.findByCartId(cartId);
         if (items.isEmpty()) {
