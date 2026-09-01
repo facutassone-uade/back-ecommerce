@@ -3,6 +3,7 @@ package com.uade.e_commerce.product;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +31,7 @@ public class ProductService {
     }
 
     public List<ProductResponseDTO> list() {
-        return productRepository.findAll().stream()
+        return productRepository.findAll(Sort.by(Sort.Direction.ASC, "name")).stream()
                 .map(this::toResponseDTO)
                 .toList();
     }
