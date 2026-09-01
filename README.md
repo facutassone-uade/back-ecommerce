@@ -158,7 +158,7 @@ Ejemplo real de validación de negocio:
   "timestamp": "2026-08-29T12:29:46.058319",
   "status": 400,
   "error": "Bad Request",
-  "message": "No se puede crear el carrito: el cliente con id 999999 no existe",
+  "message": "No se puede crear el carrito: customerId es obligatorio",
   "path": "/api/carts"
 }
 ```
@@ -166,8 +166,8 @@ Ejemplo real de validación de negocio:
 | Situación | Código |
 |---|---|
 | Ruta inexistente | 404 |
-| Recurso por id inexistente (ej. `/api/products/999999`) | 404 |
-| Regla de negocio inválida (ej. crear carrito con customer inexistente) | 400 |
+| Recurso por id inexistente, sea de la URL o referenciado en el body (ej. `/api/products/999999`, o crear un carrito con un `customerId` que no existe) | 404 |
+| Regla de negocio inválida (ej. campo obligatorio faltante, checkout con carrito vacío o sin stock) | 400 |
 | Body JSON inválido o parámetro con tipo incorrecto (ej. `/api/products/abc`) | 400 |
 | Error inesperado del servidor | 500 |
 
