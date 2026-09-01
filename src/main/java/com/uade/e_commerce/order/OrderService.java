@@ -59,8 +59,7 @@ public class OrderService {
             throw new BusinessValidationException("No se puede crear la orden: customerId es obligatorio");
         }
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new BusinessValidationException(
-                        "No se puede crear la orden: el cliente con id " + customerId + " no existe"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente", customerId));
 
         Order order = new Order();
         order.setCustomer(customer);
