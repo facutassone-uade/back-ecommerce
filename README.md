@@ -114,6 +114,8 @@ Todos los recursos exponen el mismo patrón CRUD:
 
 Recursos disponibles: `products`, `categories`, `customers`, `orders`, `carts`.
 
+`GET /api/products` devuelve el listado ordenado alfabéticamente por `name`.
+
 Además hay endpoints para las sub-entidades:
 
 | Método | Ruta | Acción |
@@ -128,6 +130,8 @@ Además hay endpoints para las sub-entidades:
 | DELETE | `/api/orders/{id}/items/{itemId}` | quitar un ítem de la orden |
 
 `orders` y `carts` referencian un cliente vía `"customerId": 1` en el body.
+
+`POST /api/carts/{id}/items` valida que haya stock suficiente antes de agregar el ítem (sumando lo que ya haya en el carrito de ese mismo producto); si no alcanza, responde 400.
 
 Cuando un producto va anidado dentro de un ítem de carrito o de orden se serializa como `ProductSummaryDTO` (solo `id`, `name`, `price`, `stock`). El `ProductResponseDTO` completo (con `description` y `categories`) se usa únicamente en los endpoints de `/api/products`.
 
