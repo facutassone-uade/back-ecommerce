@@ -111,10 +111,20 @@ public class CartService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto", productId));
 
+        Integer quantity = cartItemRequestDTO.getQuantity();
+        int alreadyInCart = cartItemRepository.findByCartId(cartId).stream()
+                .filter(existing -> existing.getProduct().getId().equals(productId))
+                .mapToInt(CartItem::getQuantity)
+                .sum();
+        if (product.getStock() < alreadyInCart + quantity) {
+            throw new BusinessValidationException(
+                    "No se puede agregar el ítem: stock insuficiente para el producto con id " + productId);
+        }
+
         CartItem item = new CartItem();
         item.setCart(cart);
         item.setProduct(product);
-        item.setQuantity(cartItemRequestDTO.getQuantity());
+        item.setQuantity(quantity);
         cartItemRepository.saveAndFlush(item);
 
         Cart refreshed = cartRepository.findById(cartId).orElse(cart);
