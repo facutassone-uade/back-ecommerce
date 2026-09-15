@@ -27,7 +27,9 @@ public class ProductService {
     }
 
     public void delete(Long id) {
-        productRepository.deleteById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
+        productRepository.delete(product);
     }
 
     public List<ProductResponseDTO> list() {

@@ -51,7 +51,9 @@ public class CartService {
     }
 
     public void delete(Long id) {
-        cartRepository.deleteById(id);
+        Cart cart = cartRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Carrito", id));
+        cartRepository.delete(cart);
     }
 
     public List<CartResponseDTO> list() {
