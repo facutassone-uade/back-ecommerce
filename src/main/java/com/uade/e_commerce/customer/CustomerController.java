@@ -27,8 +27,8 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<CustomerResponseDTO> list() {
-        return customerService.list();
+    public ResponseEntity<List<CustomerResponseDTO>> list() {
+        return ResponseEntity.ok(customerService.list());
     }
 
     @GetMapping("/{id}")

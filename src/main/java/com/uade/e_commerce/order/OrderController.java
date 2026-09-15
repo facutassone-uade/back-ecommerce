@@ -28,8 +28,8 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<OrderResponseDTO> list() {
-        return orderService.list();
+    public ResponseEntity<List<OrderResponseDTO>> list() {
+        return ResponseEntity.ok(orderService.list());
     }
 
     @GetMapping("/{id}")

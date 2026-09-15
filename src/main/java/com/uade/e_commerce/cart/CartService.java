@@ -114,20 +114,28 @@ public class CartService {
                 .orElseThrow(() -> new ResourceNotFoundException("Producto", productId));
 
         Integer quantity = cartItemRequestDTO.getQuantity();
-        int alreadyInCart = cartItemRepository.findByCartId(cartId).stream()
-                .filter(existing -> existing.getProduct().getId().equals(productId))
-                .mapToInt(CartItem::getQuantity)
-                .sum();
+
+        if (quantity == null || quantity <= 0) {
+            throw new BusinessValidationException("No se puede agregar el ítem:  cantidad debe ser mayor a 0");
+        }
+
+        CartItem existingItem = cartItemRepository.findByCartIdAndProductId(cartId, productId);
+        int alreadyInCart = existingItem != null ? existingItem.getQuantity() : 0;
         if (product.getStock() < alreadyInCart + quantity) {
             throw new BusinessValidationException(
                     "No se puede agregar el ítem: stock insuficiente para el producto con id " + productId);
         }
 
-        CartItem item = new CartItem();
-        item.setCart(cart);
-        item.setProduct(product);
-        item.setQuantity(quantity);
-        cartItemRepository.saveAndFlush(item);
+        if (existingItem != null) {
+            existingItem.setQuantity(existingItem.getQuantity() + quantity);
+            cartItemRepository.saveAndFlush(existingItem);
+        } else {
+            CartItem item = new CartItem();
+            item.setCart(cart);
+            item.setProduct(product);
+            item.setQuantity(quantity);
+            cartItemRepository.saveAndFlush(item);
+        }
 
         Cart refreshed = cartRepository.findById(cartId).orElse(cart);
         return toResponseDTO(refreshed);
@@ -136,6 +144,9 @@ public class CartService {
     public CartResponseDTO removeItem(Long cartId, Long itemId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new ResourceNotFoundException("Carrito", cartId));
+        if (!cartItemRepository.existsByIdAndCartId(itemId, cartId)) {
+            throw new ResourceNotFoundException("Ítem del carrito", itemId);
+        }
         cartItemRepository.deleteById(itemId);
         cartItemRepository.flush();
         Cart refreshed = cartRepository.findById(cartId).orElse(cart);
