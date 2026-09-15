@@ -30,8 +30,8 @@ public class CartController {
     }
 
     @GetMapping
-    public List<CartResponseDTO> list() {
-        return cartService.list();
+    public ResponseEntity<List<CartResponseDTO>> list() {
+        return ResponseEntity.ok(cartService.list());
     }
 
     @GetMapping("/{id}")

@@ -117,6 +117,9 @@ public class OrderService {
     public OrderResponseDTO removeItem(Long orderId, Long itemId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Orden", orderId));
+        if (!orderItemRepository.existsByIdAndOrderId(itemId, orderId)) {
+            throw new ResourceNotFoundException("Ítem de la orden", itemId);
+        }
         orderItemRepository.deleteById(itemId);
         orderItemRepository.flush();
         Order refreshed = orderRepository.findById(orderId).orElse(order);

@@ -4,4 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
+
+    boolean existsByIdAndOrderId(Long itemId, Long orderId);
 }

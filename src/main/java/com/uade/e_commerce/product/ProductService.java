@@ -3,7 +3,6 @@ package com.uade.e_commerce.product;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +32,7 @@ public class ProductService {
     }
 
     public List<ProductResponseDTO> list() {
-        return productRepository.findAll(Sort.by(Sort.Direction.ASC, "name")).stream()
+        return productRepository.findAllByOrderByNameAsc().stream()
                 .map(this::toResponseDTO)
                 .toList();
     }
@@ -85,10 +84,14 @@ public class ProductService {
     public ProductResponseDTO removeCategory(Long productId, Long categoryId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto", productId));
-        if (product.getCategories() == null) {
+        if (product.getCategories() == null || product.getCategories().isEmpty()) {
             throw new ResourceNotFoundException("El producto con id " + productId + " no tiene categorías asociadas");
         }
-        product.getCategories().removeIf(category -> category.getId().equals(categoryId));
+        boolean removed = product.getCategories().removeIf(category -> category.getId().equals(categoryId));
+        if (!removed) {
+            throw new ResourceNotFoundException(
+                    "El producto con id " + productId + " no tiene la categoría con id " + categoryId + " asociada");
+        }
         Product saved = productRepository.save(product);
         return toResponseDTO(saved);
     }
