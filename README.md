@@ -178,3 +178,13 @@ Ejemplo real de validación de negocio:
 ## Probar la API
 
 Importar la colección de Postman en `postman/e-commerce.postman_collection.json` (`File → Import` en Postman). Usa la variable `{{baseUrl}}` (default `http://localhost:8080`).
+
+## Datos de prueba (DataInitializer)
+
+Al levantar la app, se cargan automáticamente datos iniciales en la BD:
+- 4 categorías (Electrónica, Ropa, Libros, Hogar)
+- 8 productos variados con stock y precios
+- 3 clientes con direcciones
+
+Solo se ejecuta si la BD está vacía. Verás los mensajes `✓` en la consola confirmar la carga.
+
