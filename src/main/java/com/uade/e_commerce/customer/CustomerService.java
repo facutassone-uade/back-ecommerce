@@ -25,7 +25,9 @@ public class CustomerService {
     }
 
     public void delete(Long id) {
-        customerRepository.deleteById(id);
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente", id));
+        customerRepository.delete(customer);
     }
 
     public List<CustomerResponseDTO> list() {

@@ -38,7 +38,9 @@ public class OrderService {
     }
 
     public void delete(Long id) {
-        orderRepository.deleteById(id);
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Orden", id));
+        orderRepository.delete(order);
     }
 
     public List<OrderResponseDTO> list() {
