@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.uade.e_commerce.common.DuplicateResourceException;
 import com.uade.e_commerce.common.ResourceNotFoundException;
 import com.uade.e_commerce.customer.dto.AddressDTO;
 import com.uade.e_commerce.customer.dto.CustomerRequestDTO;
@@ -43,6 +44,14 @@ public class CustomerService {
     }
 
     public CustomerResponseDTO save(CustomerRequestDTO customerRequestDTO) {
+        if (customerRepository.findByEmail(customerRequestDTO.getEmail()).isPresent()) {
+            throw new DuplicateResourceException("Cliente", "email", customerRequestDTO.getEmail());
+        }
+
+        if (customerRepository.findByUsername(customerRequestDTO.getUsername()).isPresent()) {
+            throw new DuplicateResourceException("Cliente", "username", customerRequestDTO.getUsername());
+        }
+
         Customer customer = new Customer();
         applyRequestDTO(customer, customerRequestDTO);
         Customer saved = customerRepository.save(customer);
@@ -52,6 +61,19 @@ public class CustomerService {
     public CustomerResponseDTO update(Long id, CustomerRequestDTO customerRequestDTO) {
         Customer existing = customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente", id));
+
+        if (!existing.getEmail().equals(customerRequestDTO.getEmail())) {
+            if (customerRepository.findByEmail(customerRequestDTO.getEmail()).isPresent()) {
+                throw new DuplicateResourceException("Cliente", "email", customerRequestDTO.getEmail());
+            }
+        }
+
+        if (!existing.getUsername().equals(customerRequestDTO.getUsername())) {
+            if (customerRepository.findByUsername(customerRequestDTO.getUsername()).isPresent()) {
+                throw new DuplicateResourceException("Cliente", "username", customerRequestDTO.getUsername());
+            }
+        }
+
         applyRequestDTO(existing, customerRequestDTO);
         Customer saved = customerRepository.save(existing);
         return toResponseDTO(saved);
