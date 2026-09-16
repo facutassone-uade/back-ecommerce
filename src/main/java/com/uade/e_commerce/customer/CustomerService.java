@@ -2,9 +2,11 @@ package com.uade.e_commerce.customer;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.uade.e_commerce.common.BusinessValidationException;
 import com.uade.e_commerce.common.ResourceNotFoundException;
 import com.uade.e_commerce.customer.dto.AddressDTO;
 import com.uade.e_commerce.customer.dto.CustomerRequestDTO;
@@ -15,9 +17,11 @@ import com.uade.e_commerce.customer.dto.CustomerResponseDTO;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
         this.customerRepository = customerRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Customer findById(Long id) {
@@ -41,6 +45,13 @@ public class CustomerService {
     }
 
     public CustomerResponseDTO save(CustomerRequestDTO customerRequestDTO) {
+        if (customerRequestDTO.getPassword() == null) {
+            throw new BusinessValidationException("No se puede crear el cliente: password es obligatorio");
+        }
+        if (customerRepository.existsByEmail(customerRequestDTO.getEmail())) {
+            throw new BusinessValidationException(
+                    "No se puede crear el cliente: el email " + customerRequestDTO.getEmail() + " ya está registrado");
+        }
         Customer customer = new Customer();
         applyRequestDTO(customer, customerRequestDTO);
         Customer saved = customerRepository.save(customer);
@@ -63,7 +74,9 @@ public class CustomerService {
         customer.setPhone(customerRequestDTO.getPhone());
         customer.setAddress(toAddress(customerRequestDTO.getAddress()));
         customer.setUsername(customerRequestDTO.getUsername());
-        customer.setPassword(customerRequestDTO.getPassword());
+        if (customerRequestDTO.getPassword() != null) {
+            customer.setPassword(passwordEncoder.encode(customerRequestDTO.getPassword()));
+        }
     }
 
     private Address toAddress(AddressDTO addressDTO) {
@@ -90,7 +103,7 @@ public class CustomerService {
         return addressDTO;
     }
 
-    private CustomerResponseDTO toResponseDTO(Customer customer) {
+    public CustomerResponseDTO toResponseDTO(Customer customer) {
         CustomerResponseDTO responseDTO = new CustomerResponseDTO();
         responseDTO.setId(customer.getId());
         responseDTO.setName(customer.getName());

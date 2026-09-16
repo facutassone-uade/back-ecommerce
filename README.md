@@ -23,6 +23,18 @@ src/main/java/com/uade/e_commerce/
 │   ├── BusinessValidationException.java
 │   └── dto/
 │       └── ErrorResponseDTO.java
+├── auth/                         (JWT: registro, login, filtro y config de Spring Security)
+│   ├── SecurityConfig.java
+│   ├── JwtService.java
+│   ├── JwtAuthenticationFilter.java
+│   ├── CustomerUserDetails.java       (adapter: Customer -> UserDetails, sin tocar la entidad)
+│   ├── CustomerUserDetailsService.java
+│   ├── AuthenticationService.java
+│   ├── AuthController.java
+│   ├── AdminSeeder.java                (crea el admin único al arrancar si no existe)
+│   └── dto/
+│       ├── LoginRequestDTO.java
+│       └── AuthResponseDTO.java
 ├── product/
 │   ├── Product.java
 │   ├── ProductRepository.java
@@ -100,6 +112,25 @@ También se puede correr desde VSCode con el **Spring Boot Dashboard** o el bot�
 
 La app queda en `http://localhost:8080`.
 
+## Autenticación
+
+Todos los endpoints requieren estar autenticado con JWT, salvo `/api/auth/**`. Hay dos roles: `CUSTOMER` (se registra solo) y `ADMIN` (un único usuario, creado automáticamente al arrancar la app con las credenciales de `app.admin.email`/`app.admin.password` en `application.properties`, por defecto `admin@ecommerce.com` / `admin123`).
+
+| Método | Ruta | Acción | Acceso |
+|---|---|---|---|
+| POST | `/api/auth/register` | crear un customer nuevo (body `CustomerRequestDTO`) y devolver token | público |
+| POST | `/api/auth/login` | `{ "email": "...", "password": "..." }` → token | público |
+
+La respuesta de ambos es `{ "token": "...", "customer": {...} }`. El token va en cada request como `Authorization: Bearer <token>`.
+
+Reglas de autorización:
+- `POST` / `PUT` / `DELETE` en `/api/products/**` y `/api/categories/**` (alta, edición, borrado, asociar/quitar categorías) → solo `ADMIN`.
+- Cualquier otro endpoint autenticado → cualquier rol (`CUSTOMER` o `ADMIN`).
+
+Sin token o con token inválido/vencido → 401. Token válido pero sin el rol necesario → 403. Ambos casos devuelven el mismo formato de error que el resto de la API (ver "Formato de errores" más abajo).
+
+Los passwords se guardan hasheados con BCrypt (antes se guardaban en texto plano).
+
 ## Endpoints
 
 Todos los recursos exponen el mismo patrón CRUD:
@@ -171,8 +202,10 @@ Ejemplo real de validación de negocio:
 |---|---|
 | Ruta inexistente | 404 |
 | Recurso por id inexistente, sea de la URL o referenciado en el body (ej. `/api/products/999999`, o crear un carrito con un `customerId` que no existe) | 404 |
-| Regla de negocio inválida (ej. campo obligatorio faltante, checkout con carrito vacío o sin stock) | 400 |
+| Regla de negocio inválida (ej. campo obligatorio faltante, checkout con carrito vacío o sin stock, email ya registrado) | 400 |
 | Body JSON inválido o parámetro con tipo incorrecto (ej. `/api/products/abc`) | 400 |
+| Sin token / token inválido o vencido / login con credenciales incorrectas | 401 |
+| Token válido pero sin el rol necesario (ej. `CUSTOMER` intentando crear un producto) | 403 |
 | Error inesperado del servidor | 500 |
 
 ## Probar la API

@@ -7,6 +7,8 @@ import com.uade.e_commerce.order.Order;
 
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,6 +40,9 @@ public class Customer {
 
     private String username;
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.CUSTOMER;
 
     @JsonIgnore
     @OneToMany(mappedBy = "customer")

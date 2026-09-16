@@ -9,9 +9,141 @@
 			"key": "baseUrl",
 			"value": "http://localhost:8080",
 			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "adminToken",
+			"value": "",
+			"type": "string"
 		}
 	],
 	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register (customer)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const body = pm.response.json();",
+									"pm.collectionVariables.set('authToken', body.token);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Facundo\",\n    \"lastName\": \"Tassone\",\n    \"nationalId\": 123456789,\n    \"email\": \"ftassone@uade.com.ar\",\n    \"phone\": 12345678,\n    \"address\": {\n        \"street\": \"Av siempre viva 742\",\n        \"city\": \"CABA\",\n        \"zipCode\": \"1000\",\n        \"country\": \"Argentina\"\n    },\n    \"username\": \"ftassone\",\n    \"password\": \"1234\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					}
+				},
+				{
+					"name": "Login (customer)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const body = pm.response.json();",
+									"pm.collectionVariables.set('authToken', body.token);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"ftassone@uade.com.ar\",\n    \"password\": \"1234\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					}
+				},
+				{
+					"name": "Login (admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const body = pm.response.json();",
+									"pm.collectionVariables.set('adminToken', body.token);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@ecommerce.com\",\n    \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					}
+				}
+			]
+		},
 		{
 			"name": "Products",
 			"item": [
@@ -22,8 +154,13 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/products",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "products" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products"
+							]
 						}
 					}
 				},
@@ -34,8 +171,14 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/products/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "products", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
 						}
 					}
 				},
@@ -44,7 +187,10 @@
 					"request": {
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -52,8 +198,23 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/products",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "products" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products"
+							]
+						},
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
 						}
 					}
 				},
@@ -62,7 +223,10 @@
 					"request": {
 						"method": "PUT",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -70,8 +234,24 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/products/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "products", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						},
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
 						}
 					}
 				},
@@ -82,8 +262,24 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/products/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "products", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						},
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
 						}
 					}
 				},
@@ -94,8 +290,26 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/products/1/categories/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "products", "1", "categories", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"1",
+								"categories",
+								"1"
+							]
+						},
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
 						}
 					}
 				},
@@ -106,8 +320,26 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/products/1/categories/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "products", "1", "categories", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"1",
+								"categories",
+								"1"
+							]
+						},
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
 						}
 					}
 				}
@@ -123,8 +355,13 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/categories",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "categories" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
 						}
 					}
 				},
@@ -135,8 +372,14 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/categories/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "categories", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"1"
+							]
 						}
 					}
 				},
@@ -145,7 +388,10 @@
 					"request": {
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -153,8 +399,23 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/categories",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "categories" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						},
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
 						}
 					}
 				},
@@ -163,7 +424,10 @@
 					"request": {
 						"method": "PUT",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -171,8 +435,24 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/categories/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "categories", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"1"
+							]
+						},
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
 						}
 					}
 				},
@@ -183,8 +463,24 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/categories/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "categories", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"1"
+							]
+						},
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
 						}
 					}
 				}
@@ -200,8 +496,13 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/customers",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "customers" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"customers"
+							]
 						}
 					}
 				},
@@ -212,8 +513,14 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/customers/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "customers", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"customers",
+								"1"
+							]
 						}
 					}
 				},
@@ -222,7 +529,10 @@
 					"request": {
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -230,8 +540,13 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/customers",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "customers" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"customers"
+							]
 						}
 					}
 				},
@@ -240,7 +555,10 @@
 					"request": {
 						"method": "PUT",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -248,8 +566,14 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/customers/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "customers", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"customers",
+								"1"
+							]
 						}
 					}
 				},
@@ -260,8 +584,14 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/customers/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "customers", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"customers",
+								"1"
+							]
 						}
 					}
 				}
@@ -277,8 +607,13 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/orders",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "orders" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders"
+							]
 						}
 					}
 				},
@@ -289,8 +624,14 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/orders/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "orders", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"1"
+							]
 						}
 					}
 				},
@@ -299,7 +640,10 @@
 					"request": {
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -307,8 +651,13 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/orders",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "orders" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders"
+							]
 						}
 					}
 				},
@@ -317,7 +666,10 @@
 					"request": {
 						"method": "PUT",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -325,8 +677,14 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/orders/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "orders", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"1"
+							]
 						}
 					}
 				},
@@ -337,8 +695,14 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/orders/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "orders", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"1"
+							]
 						}
 					}
 				},
@@ -347,7 +711,10 @@
 					"request": {
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -355,8 +722,15 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/orders/1/items",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "orders", "1", "items" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"1",
+								"items"
+							]
 						}
 					}
 				},
@@ -367,8 +741,16 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/orders/1/items/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "orders", "1", "items", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"1",
+								"items",
+								"1"
+							]
 						}
 					}
 				}
@@ -384,8 +766,13 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/carts",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "carts" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts"
+							]
 						}
 					}
 				},
@@ -396,8 +783,14 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "carts", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"1"
+							]
 						}
 					}
 				},
@@ -406,7 +799,10 @@
 					"request": {
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -414,8 +810,13 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/carts",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "carts" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts"
+							]
 						}
 					}
 				},
@@ -424,7 +825,10 @@
 					"request": {
 						"method": "PUT",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -432,8 +836,14 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "carts", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"1"
+							]
 						}
 					}
 				},
@@ -444,8 +854,14 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "carts", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"1"
+							]
 						}
 					}
 				},
@@ -454,7 +870,10 @@
 					"request": {
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -462,8 +881,15 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/1/items",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "carts", "1", "items" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"1",
+								"items"
+							]
 						}
 					}
 				},
@@ -474,8 +900,16 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/1/items/1",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "carts", "1", "items", "1" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"1",
+								"items",
+								"1"
+							]
 						}
 					}
 				},
@@ -486,8 +920,15 @@
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/1/items",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "carts", "1", "items" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"1",
+								"items"
+							]
 						}
 					}
 				},
@@ -496,7 +937,10 @@
 					"request": {
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -504,13 +948,30 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/1/checkout",
-							"host": [ "{{baseUrl}}" ],
-							"path": [ "api", "carts", "1", "checkout" ]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"1",
+								"checkout"
+							]
 						},
 						"description": "Valida stock de cada item del carrito, lo descuenta, crea la Order correspondiente y vacia el carrito. Devuelve 400 si el carrito esta vacio o no hay stock suficiente."
 					}
 				}
 			]
 		}
-	]
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{authToken}}",
+				"type": "string"
+			}
+		]
+	}
 }
