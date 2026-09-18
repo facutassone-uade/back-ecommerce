@@ -27,8 +27,8 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<CategoryResponseDTO> list() {
-        return categoryService.list();
+    public ResponseEntity<List<CategoryResponseDTO>> list() {
+        return ResponseEntity.ok(categoryService.list());
     }
 
     @GetMapping("/{id}")

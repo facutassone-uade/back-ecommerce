@@ -20,7 +20,9 @@ public class CategoryService {
     }
 
     public void delete(Long id) {
-        categoryRepository.deleteById(id);
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría", id));
+        categoryRepository.delete(category);
     }
 
     public List<CategoryResponseDTO> list() {
