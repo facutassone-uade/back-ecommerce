@@ -11,11 +11,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    /**
-     * Finds products with a price lower than the given value.
-     *
-     * @param price the maximum price to search for.
-     * @return a list of products with a price lower than the given value.
-     */
-    List<Product> findByPriceLessThan(Double price);
+    List<Product> findAllByOrderByNameAsc();
 }
