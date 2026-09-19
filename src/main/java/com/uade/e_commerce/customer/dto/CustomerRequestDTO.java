@@ -5,25 +5,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerRequestDTO {
 
-    private String name;
-
-    private String lastName;
-
+    @NotNull(message = "National ID is required")
     private Long nationalId;
 
-    private String email;
 
+    @NotNull(message = "Phone is required")
     private Long phone;
 
+    @Valid
     private AddressDTO address;
-
-    private String username;
-
-    private String password;
 }
