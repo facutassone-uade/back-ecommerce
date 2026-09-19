@@ -2,6 +2,52 @@
 
 API REST de un e-commerce hecha con Spring Boot. Proyecto de la cátedra Aplicaciones Interactivas (UADE).
 
+## Características principales
+
+- **Autenticación**: HTTP Basic Authentication para proteger endpoints
+- **Autorización basada en roles**: ADMIN (operaciones administrativas), USER (cliente regular), PUBLIC (registro y login)
+- **Gestión de productos y categorías**: CRUD completo con asociaciones
+- **Carrito de compras**: Agregar/eliminar items, validación de stock, checkout
+- **Órdenes**: Creación automática al hacer checkout, gestión de items
+- Clientes: Perfil personalizable con dirección
+
+## Autenticación y Autorización
+
+La API utiliza **HTTP Basic Authentication** para proteger endpoints. Cada request debe incluir credenciales en el header `Authorization`.
+
+### Roles disponibles
+
+| Rol | Descripción | Acceso |
+|-----|------------|--------|
+| **ADMIN** | Administrador del sistema | Gestión de productos, categorías, clientes; visualizar todas las órdenes |
+| **USER** | Cliente regular | Comprar, gestionar carrito, ver propias órdenes, actualizar perfil |
+| **PUBLIC** | Sin autenticar | Registro y login |
+
+### Endpoints de autenticación
+
+| Método | Ruta | Rol | Descripción |
+|--------|------|-----|------------|
+| POST | `/api/auth/register` | PUBLIC | Registrar nueva cuenta |
+| POST | `/api/auth/login` | PUBLIC | Iniciar sesión |
+| GET | `/api/auth/me` | USER / ADMIN | Obtener perfil actual |
+| POST | `/api/auth/logout` | USER / ADMIN | Cerrar sesión |
+
+### Credenciales de prueba
+
+```
+Admin:
+- Email: admin@example.invalid
+- Password: change-me-admin
+
+Usuario:
+- Email: user@example.invalid
+- Password: change-me-user
+
+Segundo Usuario:
+- Email: user2@example.invalid
+- Password: change-me-user-2
+```
+
 ## Stack
 
 - Java 17
@@ -102,38 +148,77 @@ La app queda en `http://localhost:8080`.
 
 ## Endpoints
 
-Todos los recursos exponen el mismo patrón CRUD:
+### Productos
 
-| Método | Ruta | Acción |
-|---|---|---|
-| GET | `/api/{recurso}` | listar todos |
-| GET | `/api/{recurso}/{id}` | buscar por id |
-| POST | `/api/{recurso}` | crear |
-| PUT | `/api/{recurso}/{id}` | actualizar |
-| DELETE | `/api/{recurso}/{id}` | eliminar |
+| Método | Ruta | Rol | Descripción |
+|--------|------|-----|-------------|
+| GET | `/api/products` | USER / ADMIN | Listar todos los productos |
+| GET | `/api/products/{id}` | USER / ADMIN | Buscar producto por id |
+| POST | `/api/products` | ADMIN | Crear nuevo producto |
+| PUT | `/api/products/{id}` | ADMIN | Actualizar producto |
+| DELETE | `/api/products/{id}` | ADMIN | Eliminar producto |
 
-Recursos disponibles: `products`, `categories`, `customers`, `orders`, `carts`.
+### Categorías
 
-`GET /api/products` devuelve el listado ordenado alfabéticamente por `name`.
+| Método | Ruta | Rol | Descripción |
+|--------|------|-----|-------------|
+| GET | `/api/categories` | USER / ADMIN | Listar todas las categorías |
+| GET | `/api/categories/{id}` | USER / ADMIN | Buscar categoría por id |
+| POST | `/api/categories` | ADMIN | Crear nueva categoría |
+| PUT | `/api/categories/{id}` | ADMIN | Actualizar categoría |
+| DELETE | `/api/categories/{id}` | ADMIN | Eliminar categoría |
 
-Además hay endpoints para las sub-entidades:
+### Clientes
 
-| Método | Ruta | Acción |
-|---|---|---|
-| POST | `/api/products/{id}/categories/{categoryId}` | asociar una categoría al producto |
-| DELETE | `/api/products/{id}/categories/{categoryId}` | quitar una categoría del producto |
-| POST | `/api/carts/{id}/items` | agregar un ítem al carrito |
-| DELETE | `/api/carts/{id}/items/{itemId}` | quitar un ítem del carrito |
-| DELETE | `/api/carts/{id}/items` | vaciar el carrito |
-| POST | `/api/carts/{id}/checkout` | convertir el carrito en una orden (descuenta stock) |
-| POST | `/api/orders/{id}/items` | agregar un ítem a la orden |
-| DELETE | `/api/orders/{id}/items/{itemId}` | quitar un ítem de la orden |
+| Método | Ruta | Rol | Descripción |
+|--------|------|-----|-------------|
+| GET | `/api/customers` | ADMIN | Listar todos los clientes |
+| GET | `/api/customers/{id}` | USER (propio) / ADMIN | Obtener datos del cliente |
+| PUT | `/api/customers/{id}` | USER (propio) / ADMIN | Actualizar datos del cliente |
+| DELETE | `/api/customers/{id}` | ADMIN | Eliminar cliente |
 
-`orders` y `carts` referencian un cliente vía `"customerId": 1` en el body.
+### Órdenes
 
-`POST /api/carts/{id}/items` valida que haya stock suficiente antes de agregar el ítem (sumando lo que ya haya en el carrito de ese mismo producto); si no alcanza, responde 400.
+| Método | Ruta | Rol | Descripción |
+|--------|------|-----|-------------|
+| GET | `/api/orders` | ADMIN | Listar todas las órdenes |
+| GET | `/api/orders/{id}` | USER (propia) / ADMIN | Obtener orden por id |
+| GET | `/api/orders/user/{userId}` | USER (propia) / ADMIN | Listar órdenes del usuario |
+| POST | `/api/orders` | USER | Crear nueva orden |
+| PUT | `/api/orders/{id}` | USER (propia) / ADMIN | Actualizar orden |
+| DELETE | `/api/orders/{id}` | USER (propia) / ADMIN | Eliminar orden |
 
-Cuando un producto va anidado dentro de un ítem de carrito o de orden se serializa como `ProductSummaryDTO` (solo `id`, `name`, `price`, `stock`). El `ProductResponseDTO` completo (con `description` y `categories`) se usa únicamente en los endpoints de `/api/products`.
+### Carrito de compras
+
+| Método | Ruta | Rol | Descripción |
+|--------|------|-----|-------------|
+| GET | `/api/carts` | USER | Listar carritos del usuario |
+| GET | `/api/carts/{id}` | USER (propio) / ADMIN | Obtener carrito por id |
+| POST | `/api/carts` | USER | Crear nuevo carrito |
+| PUT | `/api/carts/{id}` | USER (propio) / ADMIN | Actualizar carrito |
+| DELETE | `/api/carts/{id}` | USER (propio) / ADMIN | Eliminar carrito |
+
+### Sub-entidades
+
+| Método | Ruta | Rol | Descripción |
+|--------|------|-----|-------------|
+| POST | `/api/products/{id}/categories/{categoryId}` | ADMIN | Asociar categoría al producto |
+| DELETE | `/api/products/{id}/categories/{categoryId}` | ADMIN | Quitar categoría del producto |
+| POST | `/api/carts/{id}/items` | USER (propio) / ADMIN | Agregar ítem al carrito |
+| DELETE | `/api/carts/{id}/items/{itemId}` | USER (propio) / ADMIN | Quitar ítem del carrito |
+| DELETE | `/api/carts/{id}/items` | USER (propio) / ADMIN | Vaciar carrito |
+| POST | `/api/carts/{id}/checkout` | USER (propio) / ADMIN | Convertir carrito en orden (descuenta stock) |
+| POST | `/api/orders/{id}/items` | USER (propia) / ADMIN | Agregar ítem a la orden |
+| DELETE | `/api/orders/{id}/items/{itemId}` | USER (propia) / ADMIN | Quitar ítem de la orden |
+
+### Notas sobre endpoints
+
+- `GET /api/products` devuelve el listado ordenado alfabéticamente por `name`
+- `POST /api/carts/{id}/items` valida que haya stock suficiente antes de agregar el ítem; si no alcanza, responde 400
+- `POST /api/carts/{id}/checkout` valida stock para cada item, descuenta del inventario, crea la orden y limpia el carrito. Responde 400 si el carrito está vacío o no hay stock suficiente
+- Cuando un producto va anidado dentro de un ítem de carrito u orden se serializa como `ProductSummaryDTO` (id, name, price, stock)
+- El `ProductResponseDTO` completo (con description y categories) se usa solo en endpoints de `/api/products`
+- `orders` y `carts` referencian un cliente vía `"customerId": número` en el body
 
 ## Formato de errores
 
@@ -177,14 +262,55 @@ Ejemplo real de validación de negocio:
 
 ## Probar la API
 
-Importar la colección de Postman en `postman/e-commerce.postman_collection.json` (`File → Import` en Postman). Usa la variable `{{baseUrl}}` (default `http://localhost:8080`).
+Importar la colección de Postman en `postman/e-commerce.postman_collection.json` (`File → Import` en Postman).
+
+### Cómo usar la colección
+
+1. **Variables de entorno**: La colección usa `{{baseUrl}}` (default `http://localhost:8080`) y credenciales de prueba (`{{adminEmail}}`, `{{adminPassword}}`, `{{userEmail}}`, `{{userPassword}}`)
+2. **Autenticación HTTP Basic**: Los endpoints protegidos ya tienen configuradas credenciales. Cada request incluye el header de autenticación correspondiente
+3. **Flujo recomendado**:
+   - Primero: `POST /api/auth/login` (como USER o ADMIN)
+   - Ver perfil: `GET /api/auth/me`
+   - Productos: `GET /api/products` (listar), `GET /api/products/{id}` (detalle)
+   - Carrito: `POST /api/carts` (crear), `POST /api/carts/{id}/items` (agregar items), `POST /api/carts/{id}/checkout` (comprar)
+   - Órdenes: `GET /api/orders/user/{{userId}}` (mis órdenes)
+
+### Seguridad en pruebas
+
+⚠️ **Nota**: Las credenciales de prueba son solo para desarrollo local. En producción:
+- Cambiar todas las contraseñas
+- No incluir credenciales en el versionado
+- Usar variables de entorno para sensibles
 
 ## Datos de prueba (DataInitializer)
 
-Al levantar la app, se cargan automáticamente datos iniciales en la BD:
-- 4 categorías (Electrónica, Ropa, Libros, Hogar)
-- 8 productos variados con stock y precios
-- 3 clientes con direcciones
+Al levantar la app, se cargan automáticamente datos iniciales en la BD (solo si está vacía):
 
-Solo se ejecuta si la BD está vacía. Verás los mensajes `✓` en la consola confirmar la carga.
+### Categorías (4)
+- Electronics
+- Clothing
+- Books
+- Home & Garden
+
+### Productos (8)
+- Laptop, Wireless Mouse, USB-C Cable (Electrónica)
+- T-Shirt, Jeans (Ropa)
+- Programming Book, Design Book (Libros)
+- Desk Lamp (Hogar)
+
+Todos incluyen stock y precios variados.
+
+### Usuarios precargados
+
+Estos usuarios se crean automáticamente para pruebas:
+
+| Email | Password | Rol | Descripción |
+|-------|----------|-----|------------|
+| admin@example.invalid | change-me-admin | ADMIN | Administrador del sistema |
+| user@example.invalid | change-me-user | USER | Cliente de prueba 1 |
+| user2@example.invalid | change-me-user-2 | USER | Cliente de prueba 2 |
+
+Cada usuario tiene un cliente asociado con dirección de ejemplo.
+
+Verás mensajes `✓` en la consola confirmar la carga de datos.
 
