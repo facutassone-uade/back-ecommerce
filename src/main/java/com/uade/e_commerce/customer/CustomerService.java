@@ -1,129 +1,51 @@
 package com.uade.e_commerce.customer;
 
-import java.util.List;
-
+import com.uade.e_commerce.auth.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.uade.e_commerce.common.DuplicateResourceException;
 import com.uade.e_commerce.common.ResourceNotFoundException;
-import com.uade.e_commerce.customer.dto.AddressDTO;
+import com.uade.e_commerce.common.ResponseDtoMapper;
 import com.uade.e_commerce.customer.dto.CustomerRequestDTO;
 import com.uade.e_commerce.customer.dto.CustomerResponseDTO;
+import com.uade.e_commerce.auth.UserRepository;
 
 @Service
 @Transactional
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final UserRepository userRepository;
+    private final ResponseDtoMapper responseDtoMapper;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(CustomerRepository customerRepository, UserRepository userRepository,
+            ResponseDtoMapper responseDtoMapper) {
         this.customerRepository = customerRepository;
-    }
-
-    public Customer findById(Long id) {
-        return customerRepository.findById(id).orElse(null);
-    }
-
-    public void delete(Long id) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente", id));
-        customerRepository.delete(customer);
-    }
-
-    public List<CustomerResponseDTO> list() {
-        return customerRepository.findAll().stream()
-                .map(this::toResponseDTO)
-                .toList();
+        this.userRepository = userRepository;
+        this.responseDtoMapper = responseDtoMapper;
     }
 
     public CustomerResponseDTO findResponseById(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente", id));
-        return toResponseDTO(customer);
-    }
-
-    public CustomerResponseDTO save(CustomerRequestDTO customerRequestDTO) {
-        if (customerRepository.findByEmail(customerRequestDTO.getEmail()).isPresent()) {
-            throw new DuplicateResourceException("Cliente", "email", customerRequestDTO.getEmail());
-        }
-
-        if (customerRepository.findByUsername(customerRequestDTO.getUsername()).isPresent()) {
-            throw new DuplicateResourceException("Cliente", "username", customerRequestDTO.getUsername());
-        }
-
-        Customer customer = new Customer();
-        applyRequestDTO(customer, customerRequestDTO);
-        Customer saved = customerRepository.save(customer);
-        return toResponseDTO(saved);
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", id));
+        return responseDtoMapper.toCustomerResponseDTO(customer);
     }
 
     public CustomerResponseDTO update(Long id, CustomerRequestDTO customerRequestDTO) {
         Customer existing = customerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente", id));
-
-        if (!existing.getEmail().equals(customerRequestDTO.getEmail())) {
-            if (customerRepository.findByEmail(customerRequestDTO.getEmail()).isPresent()) {
-                throw new DuplicateResourceException("Cliente", "email", customerRequestDTO.getEmail());
-            }
-        }
-
-        if (!existing.getUsername().equals(customerRequestDTO.getUsername())) {
-            if (customerRepository.findByUsername(customerRequestDTO.getUsername()).isPresent()) {
-                throw new DuplicateResourceException("Cliente", "username", customerRequestDTO.getUsername());
-            }
-        }
-
-        applyRequestDTO(existing, customerRequestDTO);
-        Customer saved = customerRepository.save(existing);
-        return toResponseDTO(saved);
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", id));
+        Customer updated = responseDtoMapper.customerRequestDTOToEntity(existing, customerRequestDTO);
+        return responseDtoMapper.toCustomerResponseDTO(customerRepository.save(updated));
     }
 
-    private void applyRequestDTO(Customer customer, CustomerRequestDTO customerRequestDTO) {
-        customer.setName(customerRequestDTO.getName());
-        customer.setLastName(customerRequestDTO.getLastName());
-        customer.setNationalId(customerRequestDTO.getNationalId());
-        customer.setEmail(customerRequestDTO.getEmail());
-        customer.setPhone(customerRequestDTO.getPhone());
-        customer.setAddress(toAddress(customerRequestDTO.getAddress()));
-        customer.setUsername(customerRequestDTO.getUsername());
-        customer.setPassword(customerRequestDTO.getPassword());
-    }
+    public void delete(Long id) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", id));
+        User user = customer.getUser();
 
-    private Address toAddress(AddressDTO addressDTO) {
-        if (addressDTO == null) {
-            return null;
-        }
-        Address address = new Address();
-        address.setStreet(addressDTO.getStreet());
-        address.setCity(addressDTO.getCity());
-        address.setZipCode(addressDTO.getZipCode());
-        address.setCountry(addressDTO.getCountry());
-        return address;
-    }
-
-    private AddressDTO toAddressDTO(Address address) {
-        if (address == null) {
-            return null;
-        }
-        AddressDTO addressDTO = new AddressDTO();
-        addressDTO.setStreet(address.getStreet());
-        addressDTO.setCity(address.getCity());
-        addressDTO.setZipCode(address.getZipCode());
-        addressDTO.setCountry(address.getCountry());
-        return addressDTO;
-    }
-
-    private CustomerResponseDTO toResponseDTO(Customer customer) {
-        CustomerResponseDTO responseDTO = new CustomerResponseDTO();
-        responseDTO.setId(customer.getId());
-        responseDTO.setName(customer.getName());
-        responseDTO.setLastName(customer.getLastName());
-        responseDTO.setNationalId(customer.getNationalId());
-        responseDTO.setEmail(customer.getEmail());
-        responseDTO.setPhone(customer.getPhone());
-        responseDTO.setAddress(toAddressDTO(customer.getAddress()));
-        responseDTO.setUsername(customer.getUsername());
-        return responseDTO;
+        customerRepository.delete(customer);
+        userRepository.delete(user);
     }
 }
+
+
+
