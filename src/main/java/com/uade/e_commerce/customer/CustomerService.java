@@ -1,129 +1,88 @@
 package com.uade.e_commerce.customer;
 
-import java.util.List;
-
+import com.uade.e_commerce.auth.User;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.uade.e_commerce.common.DuplicateResourceException;
+import com.uade.e_commerce.common.BusinessValidationException;
 import com.uade.e_commerce.common.ResourceNotFoundException;
-import com.uade.e_commerce.customer.dto.AddressDTO;
+import com.uade.e_commerce.common.ResponseDtoMapper;
 import com.uade.e_commerce.customer.dto.CustomerRequestDTO;
 import com.uade.e_commerce.customer.dto.CustomerResponseDTO;
+import com.uade.e_commerce.auth.UserRepository;
+import com.uade.e_commerce.order.OrderRepository;
 
 @Service
 @Transactional
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
+    private final ResponseDtoMapper responseDtoMapper;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(CustomerRepository customerRepository, UserRepository userRepository,
+            OrderRepository orderRepository, ResponseDtoMapper responseDtoMapper) {
         this.customerRepository = customerRepository;
+        this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
+        this.responseDtoMapper = responseDtoMapper;
     }
 
-    public Customer findById(Long id) {
-        return customerRepository.findById(id).orElse(null);
+    public CustomerResponseDTO findResponseById(Long id) {
+        Customer customer = findCustomerForAccess(id);
+        return responseDtoMapper.toCustomerResponseDTO(customer);
+    }
+
+    public CustomerResponseDTO update(Long id, CustomerRequestDTO customerRequestDTO) {
+        Customer existing = findCustomerForAccess(id);
+        Customer updated = responseDtoMapper.customerRequestDTOToEntity(existing, customerRequestDTO);
+        return responseDtoMapper.toCustomerResponseDTO(customerRepository.save(updated));
     }
 
     public void delete(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente", id));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", id));
+
+        if (!orderRepository.findByCustomerId(id).isEmpty()) {
+            throw new BusinessValidationException("Cannot delete customer: orders are associated with this customer");
+        }
+
+        User user = customer.getUser();
+
         customerRepository.delete(customer);
+        userRepository.delete(user);
     }
 
-    public List<CustomerResponseDTO> list() {
-        return customerRepository.findAll().stream()
-                .map(this::toResponseDTO)
-                .toList();
-    }
+    private Customer findCustomerForAccess(Long customerId) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", customerId));
 
-    public CustomerResponseDTO findResponseById(Long id) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente", id));
-        return toResponseDTO(customer);
-    }
-
-    public CustomerResponseDTO save(CustomerRequestDTO customerRequestDTO) {
-        if (customerRepository.findByEmail(customerRequestDTO.getEmail()).isPresent()) {
-            throw new DuplicateResourceException("Cliente", "email", customerRequestDTO.getEmail());
+        if (isAdmin()) {
+            return customer;
         }
 
-        if (customerRepository.findByUsername(customerRequestDTO.getUsername()).isPresent()) {
-            throw new DuplicateResourceException("Cliente", "username", customerRequestDTO.getUsername());
+        Long customerOwnerUserId = customer.getUser() != null ? customer.getUser().getId() : null;
+        Long currentUserId = getCurrentUser().getId();
+        if (customerOwnerUserId == null || !customerOwnerUserId.equals(currentUserId)) {
+            throw new AccessDeniedException("You cannot access this customer");
         }
 
-        Customer customer = new Customer();
-        applyRequestDTO(customer, customerRequestDTO);
-        Customer saved = customerRepository.save(customer);
-        return toResponseDTO(saved);
+        return customer;
     }
 
-    public CustomerResponseDTO update(Long id, CustomerRequestDTO customerRequestDTO) {
-        Customer existing = customerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente", id));
-
-        if (!existing.getEmail().equals(customerRequestDTO.getEmail())) {
-            if (customerRepository.findByEmail(customerRequestDTO.getEmail()).isPresent()) {
-                throw new DuplicateResourceException("Cliente", "email", customerRequestDTO.getEmail());
-            }
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof User user)) {
+            throw new IllegalStateException("Authenticated user not available");
         }
-
-        if (!existing.getUsername().equals(customerRequestDTO.getUsername())) {
-            if (customerRepository.findByUsername(customerRequestDTO.getUsername()).isPresent()) {
-                throw new DuplicateResourceException("Cliente", "username", customerRequestDTO.getUsername());
-            }
-        }
-
-        applyRequestDTO(existing, customerRequestDTO);
-        Customer saved = customerRepository.save(existing);
-        return toResponseDTO(saved);
+        return user;
     }
 
-    private void applyRequestDTO(Customer customer, CustomerRequestDTO customerRequestDTO) {
-        customer.setName(customerRequestDTO.getName());
-        customer.setLastName(customerRequestDTO.getLastName());
-        customer.setNationalId(customerRequestDTO.getNationalId());
-        customer.setEmail(customerRequestDTO.getEmail());
-        customer.setPhone(customerRequestDTO.getPhone());
-        customer.setAddress(toAddress(customerRequestDTO.getAddress()));
-        customer.setUsername(customerRequestDTO.getUsername());
-        customer.setPassword(customerRequestDTO.getPassword());
-    }
-
-    private Address toAddress(AddressDTO addressDTO) {
-        if (addressDTO == null) {
-            return null;
-        }
-        Address address = new Address();
-        address.setStreet(addressDTO.getStreet());
-        address.setCity(addressDTO.getCity());
-        address.setZipCode(addressDTO.getZipCode());
-        address.setCountry(addressDTO.getCountry());
-        return address;
-    }
-
-    private AddressDTO toAddressDTO(Address address) {
-        if (address == null) {
-            return null;
-        }
-        AddressDTO addressDTO = new AddressDTO();
-        addressDTO.setStreet(address.getStreet());
-        addressDTO.setCity(address.getCity());
-        addressDTO.setZipCode(address.getZipCode());
-        addressDTO.setCountry(address.getCountry());
-        return addressDTO;
-    }
-
-    private CustomerResponseDTO toResponseDTO(Customer customer) {
-        CustomerResponseDTO responseDTO = new CustomerResponseDTO();
-        responseDTO.setId(customer.getId());
-        responseDTO.setName(customer.getName());
-        responseDTO.setLastName(customer.getLastName());
-        responseDTO.setNationalId(customer.getNationalId());
-        responseDTO.setEmail(customer.getEmail());
-        responseDTO.setPhone(customer.getPhone());
-        responseDTO.setAddress(toAddressDTO(customer.getAddress()));
-        responseDTO.setUsername(customer.getUsername());
-        return responseDTO;
+    private boolean isAdmin() {
+        return getCurrentUser().getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
     }
 }
