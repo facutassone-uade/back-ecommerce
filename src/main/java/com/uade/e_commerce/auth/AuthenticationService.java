@@ -10,6 +10,7 @@ import com.uade.e_commerce.auth.dto.AuthResponseDTO;
 import com.uade.e_commerce.auth.dto.LoginRequestDTO;
 import com.uade.e_commerce.auth.dto.RegisterRequestDTO;
 import com.uade.e_commerce.common.DuplicateResourceException;
+import com.uade.e_commerce.common.ResourceNotFoundException;
 import com.uade.e_commerce.customer.Customer;
 import com.uade.e_commerce.customer.CustomerRepository;
 import com.uade.e_commerce.common.ResponseDtoMapper;
@@ -63,7 +64,7 @@ public class AuthenticationService {
                 new UsernamePasswordAuthenticationToken(email, requestDTO.getPassword()));
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Internal error: user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User with email " + email + " does not exist"));
 
         Long customerId = customerRepository.findByUserId(user.getId())
                 .map(Customer::getId)

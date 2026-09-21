@@ -29,7 +29,7 @@
 	"item": [
 		{
 			"name": "Auth",
-			"description": "Authentication endpoints. Register creates a new customer account. Login returns authentication credentials. Get me retrieves the current authenticated user profile.",
+			"description": "Authentication endpoints. Register creates a new customer account. Login returns authentication credentials.",
 			"item": [
 				{
 					"name": "Register user",
@@ -87,49 +87,8 @@
 							"path": ["api", "auth", "login"]
 						}
 					}
-				},
-				{
-					"name": "Get current user (me)",
-					"description": "Role: ANY (USER or ADMIN). Returns the profile of the currently authenticated user.",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/me",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "auth", "me"]
-						}
-					}
-				},
-				{
-					"name": "Logout",
-					"description": "Role: ANY (USER or ADMIN). Ends the current session.",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/logout",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "auth", "logout"]
-						}
-					}
 				}
 			]
-		}
 		},
 		{
 			"name": "Products",
@@ -288,7 +247,7 @@
 					}
 				}
 			]
-		}
+		},
 		{
 			"name": "Categories",
 			"description": "Category management endpoints. Read operations require authentication (ANY role). Write operations require ADMIN role.",
@@ -406,7 +365,7 @@
 					}
 				}
 			]
-		}
+		},
 		{
 			"name": "Customers",
 			"description": "Customer profile management. User registration is done via /api/auth/register. Customers can view and update their own profile. Admins can manage all customer data.",
@@ -428,26 +387,6 @@
 							"raw": "{{baseUrl}}/api/customers/{{customerId}}",
 							"host": ["{{baseUrl}}"],
 							"path": ["api", "customers", "{{customerId}}"]
-						}
-					}
-				},
-				{
-					"name": "List customers",
-					"description": "Role: ADMIN. Retrieve all customer profiles.",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{adminEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{adminPassword}}", "type": "string" }
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/customers",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "customers"]
 						}
 					}
 				},
@@ -498,7 +437,7 @@
 					}
 				}
 			]
-		}
+		},
 		{
 			"name": "Orders",
 			"description": "Order management endpoints. Users can view and manage their own orders. Admins can view all orders and manage any order.",
@@ -682,7 +621,7 @@
 					}
 				}
 			]
-		}
+		},
 		{
 			"name": "Carts",
 			"description": "Shopping cart management. Users work with their own carts. Carts hold items temporarily before checkout. Checkout validates stock, creates an order, and clears the cart.",
