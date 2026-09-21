@@ -3,9 +3,13 @@ package com.uade.e_commerce.cart;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.uade.e_commerce.auth.User;
 import com.uade.e_commerce.cart.dto.CartCheckoutRequestDTO;
 import com.uade.e_commerce.cart.dto.CartItemRequestDTO;
 import com.uade.e_commerce.cart.dto.CartRequestDTO;
@@ -49,20 +53,25 @@ public class CartService {
     }
 
     public void delete(Long id) {
-        Cart cart = cartRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", id));
+        Cart cart = findCartForAccess(id);
         cartRepository.delete(cart);
     }
 
     public List<CartResponseDTO> list() {
-        return cartRepository.findAll().stream()
+        if (isAdmin()) {
+            return cartRepository.findAll().stream()
+                    .map(dtoMapper::toCartResponseDTO)
+                    .toList();
+        }
+
+        Customer currentCustomer = getCurrentCustomer();
+        return cartRepository.findByCustomerId(currentCustomer.getId()).stream()
                 .map(dtoMapper::toCartResponseDTO)
                 .toList();
     }
 
     public CartResponseDTO findResponseById(Long id) {
-        Cart cart = cartRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", id));
+        Cart cart = findCartForAccess(id);
         return dtoMapper.toCartResponseDTO(cart);
     }
 
@@ -71,6 +80,14 @@ public class CartService {
         if (customerId == null) {
             throw new BusinessValidationException("Cannot create cart: customerId is required");
         }
+
+        if (!isAdmin()) {
+            Long currentCustomerId = getCurrentCustomer().getId();
+            if (!currentCustomerId.equals(customerId)) {
+                throw new AccessDeniedException("You cannot create a cart for another user");
+            }
+        }
+
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer", customerId));
 
@@ -84,12 +101,19 @@ public class CartService {
     }
 
     public CartResponseDTO update(Long id, CartRequestDTO cartRequestDTO) {
-        Cart existing = cartRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", id));
+        Cart existing = findCartForAccess(id);
         Long customerId = cartRequestDTO.getCustomerId();
         if (customerId == null) {
             throw new BusinessValidationException("Cannot update cart: customerId is required");
         }
+
+        if (!isAdmin()) {
+            Long currentCustomerId = getCurrentCustomer().getId();
+            if (!currentCustomerId.equals(customerId)) {
+                throw new AccessDeniedException("You cannot update another user's cart");
+            }
+        }
+
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer", customerId));
 
@@ -102,8 +126,7 @@ public class CartService {
     }
 
     public CartResponseDTO addItem(Long cartId, CartItemRequestDTO cartItemRequestDTO) {
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", cartId));
+        Cart cart = findCartForAccess(cartId);
         Long productId = cartItemRequestDTO.getProductId();
         if (productId == null) {
             throw new BusinessValidationException("Cannot add item: productId is required");
@@ -140,8 +163,7 @@ public class CartService {
     }
 
     public CartResponseDTO removeItem(Long cartId, Long itemId) {
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", cartId));
+        Cart cart = findCartForAccess(cartId);
         if (!cartItemRepository.existsByIdAndCartId(itemId, cartId)) {
             throw new ResourceNotFoundException("Cart item", itemId);
         }
@@ -152,8 +174,7 @@ public class CartService {
     }
 
     public CartResponseDTO clearItems(Long cartId) {
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", cartId));
+        Cart cart = findCartForAccess(cartId);
         cartItemRepository.deleteAll(cartItemRepository.findByCartId(cartId));
         cartItemRepository.flush();
         Cart refreshed = cartRepository.findById(cartId).orElse(cart);
@@ -161,8 +182,7 @@ public class CartService {
     }
 
     public OrderResponseDTO checkout(Long cartId, CartCheckoutRequestDTO checkoutRequestDTO) {
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", cartId));
+        Cart cart = findCartForAccess(cartId);
 
         List<CartItem> items = cartItemRepository.findByCartId(cartId);
         if (items.isEmpty()) {
@@ -207,5 +227,43 @@ public class CartService {
 
         Order refreshedOrder = orderRepository.findById(savedOrder.getId()).orElse(savedOrder);
         return dtoMapper.toOrderResponseDTO(refreshedOrder);
+    }
+
+    private Cart findCartForAccess(Long cartId) {
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart", cartId));
+
+        if (isAdmin()) {
+            return cart;
+        }
+
+        Long cartOwnerUserId = cart.getCustomer() != null && cart.getCustomer().getUser() != null
+                ? cart.getCustomer().getUser().getId()
+                : null;
+        Long currentUserId = getCurrentUser().getId();
+        if (cartOwnerUserId == null || !cartOwnerUserId.equals(currentUserId)) {
+            throw new AccessDeniedException("You cannot access this cart");
+        }
+
+        return cart;
+    }
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof User user)) {
+            throw new IllegalStateException("Authenticated user not available");
+        }
+        return user;
+    }
+
+    private boolean isAdmin() {
+        return getCurrentUser().getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
+    }
+
+    private Customer getCurrentCustomer() {
+        User currentUser = getCurrentUser();
+        return customerRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found for user id " + currentUser.getId()));
     }
 }
