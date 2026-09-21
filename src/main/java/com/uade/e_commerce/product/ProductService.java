@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.uade.e_commerce.category.dto.CategoryResponseDTO;
 import com.uade.e_commerce.common.ResourceNotFoundException;
+import com.uade.e_commerce.common.ResponseDtoMapper;
 import com.uade.e_commerce.product.dto.ProductRequestDTO;
 import com.uade.e_commerce.product.dto.ProductResponseDTO;
 import com.uade.e_commerce.category.Category;
@@ -19,28 +19,31 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ResponseDtoMapper dtoMapper;
 
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,
+            ResponseDtoMapper dtoMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.dtoMapper = dtoMapper;
     }
 
     public void delete(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product", id));
         productRepository.delete(product);
     }
 
     public List<ProductResponseDTO> list() {
         return productRepository.findAllByOrderByNameAsc().stream()
-                .map(this::toResponseDTO)
+                .map(dtoMapper::toProductResponseDTO)
                 .toList();
     }
 
     public ProductResponseDTO findResponseById(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
-        return toResponseDTO(product);
+                .orElseThrow(() -> new ResourceNotFoundException("Product", id));
+        return dtoMapper.toProductResponseDTO(product);
     }
 
     public ProductResponseDTO save(ProductRequestDTO productRequestDTO) {
@@ -51,26 +54,26 @@ public class ProductService {
         product.setStock(productRequestDTO.getStock());
 
         Product saved = productRepository.save(product);
-        return toResponseDTO(saved);
+        return dtoMapper.toProductResponseDTO(saved);
     }
 
     public ProductResponseDTO update(Long id, ProductRequestDTO productRequestDTO) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product", id));
         product.setName(productRequestDTO.getName());
         product.setDescription(productRequestDTO.getDescription());
         product.setPrice(productRequestDTO.getPrice());
         product.setStock(productRequestDTO.getStock());
 
         Product saved = productRepository.save(product);
-        return toResponseDTO(saved);
+        return dtoMapper.toProductResponseDTO(saved);
     }
 
     public ProductResponseDTO addCategory(Long productId, Long categoryId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Producto", productId));
+                .orElseThrow(() -> new ResourceNotFoundException("Product", productId));
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Categoría", categoryId));
+                .orElseThrow(() -> new ResourceNotFoundException("Category", categoryId));
         if (product.getCategories() == null) {
             product.setCategories(new ArrayList<>());
         }
@@ -78,43 +81,21 @@ public class ProductService {
             product.getCategories().add(category);
         }
         Product saved = productRepository.save(product);
-        return toResponseDTO(saved);
+        return dtoMapper.toProductResponseDTO(saved);
     }
 
     public ProductResponseDTO removeCategory(Long productId, Long categoryId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Producto", productId));
+                .orElseThrow(() -> new ResourceNotFoundException("Product", productId));
         if (product.getCategories() == null || product.getCategories().isEmpty()) {
-            throw new ResourceNotFoundException("El producto con id " + productId + " no tiene categorías asociadas");
+            throw new ResourceNotFoundException("Product with id " + productId + " has no associated categories");
         }
         boolean removed = product.getCategories().removeIf(category -> category.getId().equals(categoryId));
         if (!removed) {
             throw new ResourceNotFoundException(
-                    "El producto con id " + productId + " no tiene la categoría con id " + categoryId + " asociada");
+                    "Product with id " + productId + " does not have category with id " + categoryId + " associated");
         }
         Product saved = productRepository.save(product);
-        return toResponseDTO(saved);
-    }
-
-    private ProductResponseDTO toResponseDTO(Product product) {
-        ProductResponseDTO responseDTO = new ProductResponseDTO();
-        responseDTO.setId(product.getId());
-        responseDTO.setName(product.getName());
-        responseDTO.setDescription(product.getDescription());
-        responseDTO.setPrice(product.getPrice());
-        responseDTO.setStock(product.getStock());
-        if (product.getCategories() != null) {
-            responseDTO.setCategories(product.getCategories().stream()
-                    .map(this::toCategoryResponseDTO)
-                    .toList());
-        }
-        return responseDTO;
-    }
-
-    private CategoryResponseDTO toCategoryResponseDTO(Category category) {
-        CategoryResponseDTO categoryDTO = new CategoryResponseDTO();
-        categoryDTO.setId(category.getId());
-        categoryDTO.setName(category.getName());
-        return categoryDTO;
+        return dtoMapper.toProductResponseDTO(saved);
     }
 }

@@ -12,18 +12,9 @@ import lombok.Setter;
 public class CustomerResponseDTO {
 
     private Long id;
-
-    private String name;
-
-    private String lastName;
-
     private Long nationalId;
-
-    private String email;
-
     private Long phone;
-
     private AddressDTO address;
 
-    private String username;
+    private Long userId;
 }

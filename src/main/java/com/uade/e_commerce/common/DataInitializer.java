@@ -1,14 +1,16 @@
 package com.uade.e_commerce.common;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.uade.e_commerce.auth.Role;
+import com.uade.e_commerce.auth.User;
+import com.uade.e_commerce.auth.UserRepository;
 import com.uade.e_commerce.category.Category;
 import com.uade.e_commerce.category.CategoryRepository;
-import com.uade.e_commerce.customer.Address;
 import com.uade.e_commerce.customer.Customer;
 import com.uade.e_commerce.customer.CustomerRepository;
 import com.uade.e_commerce.product.Product;
@@ -19,169 +21,121 @@ public class DataInitializer implements CommandLineRunner {
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public DataInitializer(CategoryRepository categoryRepository, ProductRepository productRepository,
-            CustomerRepository customerRepository) {
+            UserRepository userRepository, CustomerRepository customerRepository,
+            PasswordEncoder passwordEncoder) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
+        this.userRepository = userRepository;
         this.customerRepository = customerRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public void run(String... args) throws Exception {
-        // Only initialize if no data exists
+    public void run(String... args) {
+        if (userRepository.count() == 0) {
+            initializeAdmin();
+            initializeCustomers();
+        }
+
         if (categoryRepository.count() == 0) {
             initializeCategories();
             initializeProducts();
-            initializeCustomers();
-            System.out.println("✓ Datos de prueba cargados exitosamente");
+            System.out.println("✓ Test data loaded");
         }
     }
 
-    private void initializeCategories() {
-        Category electronica = new Category();
-        electronica.setName("Electrónica");
+    private void initializeAdmin() {
+        User admin = new User();
+        admin.setFirstName("Admin");
+        admin.setLastName("System");
+        admin.setEmail("admin@example.com");
+        admin.setPassword(passwordEncoder.encode("123456"));
+        admin.setRole(Role.ADMIN);
+        User savedAdmin = userRepository.save(admin);
 
-        Category ropa = new Category();
-        ropa.setName("Ropa");
+        Customer adminCustomer = new Customer();
+        adminCustomer.setUser(savedAdmin);
+        adminCustomer.setNationalId(30123456L);
+        adminCustomer.setPhone(1112345678L);
+        customerRepository.save(adminCustomer);
 
-        Category libros = new Category();
-        libros.setName("Libros");
-
-        Category hogar = new Category();
-        hogar.setName("Hogar");
-
-        categoryRepository.saveAll(Arrays.asList(electronica, ropa, libros, hogar));
-        System.out.println("✓ Categorías insertadas");
-    }
-
-    private void initializeProducts() {
-        List<Category> electronicaList = categoryRepository.findAll().stream()
-                .filter(c -> c.getName().equals("Electrónica")).toList();
-        List<Category> ropaList = categoryRepository.findAll().stream()
-                .filter(c -> c.getName().equals("Ropa")).toList();
-        List<Category> librosList = categoryRepository.findAll().stream()
-                .filter(c -> c.getName().equals("Libros")).toList();
-
-        // Productos Electrónica
-        Product laptop = new Product();
-        laptop.setName("Laptop Dell");
-        laptop.setDescription("Laptop de 15 pulgadas con procesador Intel i7");
-        laptop.setPrice(1200.00);
-        laptop.setStock(10);
-        laptop.setCategories(electronicaList);
-
-        Product mouse = new Product();
-        mouse.setName("Mouse Logitech");
-        mouse.setDescription("Mouse inalámbrico con sensor óptico");
-        mouse.setPrice(35.00);
-        mouse.setStock(50);
-        mouse.setCategories(electronicaList);
-
-        Product teclado = new Product();
-        teclado.setName("Teclado Mecánico");
-        teclado.setDescription("Teclado mecánico RGB con switches Cherry MX");
-        teclado.setPrice(150.00);
-        teclado.setStock(25);
-        teclado.setCategories(electronicaList);
-
-        // Productos Ropa
-        Product camiseta = new Product();
-        camiseta.setName("Camiseta Básica");
-        camiseta.setDescription("Camiseta de algodón 100% - Disponible en varios colores");
-        camiseta.setPrice(25.00);
-        camiseta.setStock(100);
-        camiseta.setCategories(ropaList);
-
-        Product pantalon = new Product();
-        pantalon.setName("Pantalón Jeans");
-        pantalon.setDescription("Pantalón jeans azul oscuro - Talla única");
-        pantalon.setPrice(65.00);
-        pantalon.setStock(40);
-        pantalon.setCategories(ropaList);
-
-        Product zapatillas = new Product();
-        zapatillas.setName("Zapatillas Deportivas");
-        zapatillas.setDescription("Zapatillas de running con amortiguación");
-        zapatillas.setPrice(95.00);
-        zapatillas.setStock(30);
-        zapatillas.setCategories(ropaList);
-
-        // Productos Libros
-        Product libroSpring = new Product();
-        libroSpring.setName("Spring en Acción");
-        libroSpring.setDescription("Guía completa de Spring Framework");
-        libroSpring.setPrice(45.00);
-        libroSpring.setStock(20);
-        libroSpring.setCategories(librosList);
-
-        Product libroJava = new Product();
-        libroJava.setName("Java Efectivo");
-        libroJava.setDescription("Mejores prácticas en Java moderno");
-        libroJava.setPrice(50.00);
-        libroJava.setStock(15);
-        libroJava.setCategories(librosList);
-
-        productRepository.saveAll(Arrays.asList(
-                laptop, mouse, teclado,
-                camiseta, pantalon, zapatillas,
-                libroSpring, libroJava
-        ));
-        System.out.println("✓ Productos insertados");
+        System.out.println("✓ Admin created: admin@example.com");
     }
 
     private void initializeCustomers() {
-        Address address1 = new Address();
-        address1.setStreet("Av. Principal 123");
-        address1.setCity("Buenos Aires");
-        address1.setZipCode("1425");
-        address1.setCountry("Argentina");
+        User user1 = new User();
+        user1.setFirstName("John");
+        user1.setLastName("Garcia");
+        user1.setEmail("juan.garcia@email.com");
+        user1.setPassword(passwordEncoder.encode("password123"));
+        user1.setRole(Role.USER);
+        User savedUser1 = userRepository.save(user1);
 
         Customer customer1 = new Customer();
-        customer1.setName("Juan");
-        customer1.setLastName("García");
+        customer1.setUser(savedUser1);
         customer1.setNationalId(35123456L);
-        customer1.setEmail("juan.garcia@email.com");
         customer1.setPhone(1145678901L);
-        customer1.setAddress(address1);
-        customer1.setUsername("juan_garcia");
-        customer1.setPassword("password123");
+        customerRepository.save(customer1);
 
-        Address address2 = new Address();
-        address2.setStreet("Calle Secundaria 456");
-        address2.setCity("CABA");
-        address2.setZipCode("1015");
-        address2.setCountry("Argentina");
+        User user2 = new User();
+        user2.setFirstName("Mary");
+        user2.setLastName("Lopez");
+        user2.setEmail("maria.lopez@email.com");
+        user2.setPassword(passwordEncoder.encode("password456"));
+        user2.setRole(Role.USER);
+        User savedUser2 = userRepository.save(user2);
 
         Customer customer2 = new Customer();
-        customer2.setName("María");
-        customer2.setLastName("López");
+        customer2.setUser(savedUser2);
         customer2.setNationalId(36789012L);
-        customer2.setEmail("maria.lopez@email.com");
         customer2.setPhone(1187654321L);
-        customer2.setAddress(address2);
-        customer2.setUsername("maria_lopez");
-        customer2.setPassword("password456");
+        customerRepository.save(customer2);
 
-        Address address3 = new Address();
-        address3.setStreet("Calle Tercera 789");
-        address3.setCity("La Plata");
-        address3.setZipCode("1900");
-        address3.setCountry("Argentina");
+        System.out.println("✓ Test customers created");
+    }
 
-        Customer customer3 = new Customer();
-        customer3.setName("Carlos");
-        customer3.setLastName("Rodríguez");
-        customer3.setNationalId(37456789L);
-        customer3.setEmail("carlos.rodriguez@email.com");
-        customer3.setPhone(1199876543L);
-        customer3.setAddress(address3);
-        customer3.setUsername("carlos_rodriguez");
-        customer3.setPassword("password789");
+    private void initializeCategories() {
+        Category electronics = new Category();
+        electronics.setName("Electronics");
 
-        customerRepository.saveAll(Arrays.asList(customer1, customer2, customer3));
-        System.out.println("✓ Clientes insertados");
+        Category clothes = new Category();
+        clothes.setName("Clothes");
+
+        Category books = new Category();
+        books.setName("Books");
+
+        categoryRepository.saveAll(Arrays.asList(electronics, clothes, books));
+    }
+
+    private void initializeProducts() {
+        var categories = categoryRepository.findAll();
+
+        Product laptop = new Product();
+        laptop.setName("Dell Laptop");
+        laptop.setDescription("15 inch laptop");
+        laptop.setPrice(1200.00);
+        laptop.setStock(10);
+        laptop.setCategories(categories);
+
+        Product mouse = new Product();
+        mouse.setName("Logitech Mouse");
+        mouse.setDescription("Wireless mouse");
+        mouse.setPrice(35.00);
+        mouse.setStock(50);
+        mouse.setCategories(categories);
+
+        Product shirt = new Product();
+        shirt.setName("Basic T-Shirt");
+        shirt.setDescription("Cotton t-shirt");
+        shirt.setPrice(25.00);
+        shirt.setStock(100);
+        shirt.setCategories(categories);
+
+        productRepository.saveAll(Arrays.asList(laptop, mouse, shirt));
     }
 }
-
