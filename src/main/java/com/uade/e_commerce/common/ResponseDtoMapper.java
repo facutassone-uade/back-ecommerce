@@ -27,7 +27,7 @@ import com.uade.e_commerce.product.dto.ProductSummaryDTO;
 @Component
 public class ResponseDtoMapper {
 
-    public AuthResponseDTO toAuthResponseDTO(String message, User user, Long customerId) {
+    public AuthResponseDTO toAuthResponseDTO(String message, User user, Long customerId, String token) {
         if (user == null) {
             return null;
         }
@@ -39,6 +39,7 @@ public class ResponseDtoMapper {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .role(user.getRole() != null ? user.getRole().name() : "USER")
+                .token(token)
                 .build();
     }
 

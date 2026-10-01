@@ -1,7 +1,7 @@
 {
 	"info": {
 		"name": "e-commerce",
-		"description": "API REST collection for e-commerce project (Spring Boot). Use the {{baseUrl}} variable (default http://localhost:8080). The application uses HTTP Basic authentication for protected endpoints. Update the variables according to your environment before running authenticated requests. All endpoints are role-based: ADMIN for administrative operations, USER for customer operations.",
+		"description": "API REST collection for e-commerce project (Spring Boot). The existing requests use HTTP Basic authentication for compatibility. The JWT folder contains new Bearer Token requests for the current authentication flow.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [
@@ -24,7 +24,10 @@
 		{ "key": "cartId", "value": "1", "type": "string" },
 		{ "key": "cartItemId", "value": "1", "type": "string" },
 		{ "key": "orderId", "value": "1", "type": "string" },
-		{ "key": "orderItemId", "value": "1", "type": "string" }
+		{ "key": "orderItemId", "value": "1", "type": "string" },
+		{ "key": "jwtToken", "value": "", "type": "string" },
+		{ "key": "jwtAdminEmail", "value": "admin@example.com", "type": "string" },
+		{ "key": "jwtAdminPassword", "value": "123456", "type": "string" }
 	],
 	"item": [
 		{
@@ -829,6 +832,99 @@
 							"path": ["api", "carts", "{{cartId}}", "checkout"]
 						}
 					}
+				},
+				{
+					"name": "JWT - Nuevas requests",
+					"description": "Requests nuevas para probar JWT. Ejecutá primero Login admin: guarda automáticamente el token en {{jwtToken}}.",
+					"item": [
+						{
+							"name": "Login admin (JWT)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const response = pm.response.json();",
+											"pm.collectionVariables.set('jwtToken', response.token);",
+											"pm.test('JWT recibido', function () {",
+											"    pm.expect(response.token).to.be.a('string').and.not.empty;",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{ "key": "Content-Type", "value": "application/json" }
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"{{jwtAdminEmail}}\",\n  \"password\": \"{{jwtAdminPassword}}\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/auth/login",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "auth", "login"]
+								}
+							}
+						},
+						{
+							"name": "Listar productos (JWT)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{ "key": "token", "value": "{{jwtToken}}", "type": "string" }
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/products",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "products"]
+								}
+							}
+						},
+						{
+							"name": "Listar carritos (JWT)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{ "key": "token", "value": "{{jwtToken}}", "type": "string" }
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/carts",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "carts"]
+								}
+							}
+						},
+						{
+							"name": "Listar órdenes admin (JWT)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{ "key": "token", "value": "{{jwtToken}}", "type": "string" }
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/orders",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "orders"]
+								}
+							}
+						}
+					]
 				}
 			]
 		}

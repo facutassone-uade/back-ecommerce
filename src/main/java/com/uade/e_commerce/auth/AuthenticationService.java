@@ -14,6 +14,7 @@ import com.uade.e_commerce.common.ResourceNotFoundException;
 import com.uade.e_commerce.customer.Customer;
 import com.uade.e_commerce.customer.CustomerRepository;
 import com.uade.e_commerce.common.ResponseDtoMapper;
+import com.uade.e_commerce.security.JwtService;
 
 @Service
 @Transactional
@@ -24,15 +25,17 @@ public class AuthenticationService {
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
     private final ResponseDtoMapper responseDtoMapper;
+    private final JwtService jwtService;
 
     public AuthenticationService(AuthenticationManager authenticationManager, UserRepository userRepository,
             CustomerRepository customerRepository, PasswordEncoder passwordEncoder,
-            ResponseDtoMapper responseDtoMapper) {
+            ResponseDtoMapper responseDtoMapper, JwtService jwtService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
         this.responseDtoMapper = responseDtoMapper;
+        this.jwtService = jwtService;
     }
 
     public AuthResponseDTO register(RegisterRequestDTO requestDTO) {
@@ -54,7 +57,8 @@ public class AuthenticationService {
         customer.setUser(savedUser);
         Customer savedCustomer = customerRepository.save(customer);
 
-        return responseDtoMapper.toAuthResponseDTO("User registered successfully", savedUser, savedCustomer.getId());
+        return responseDtoMapper.toAuthResponseDTO(
+                "User registered successfully", savedUser, savedCustomer.getId(), jwtService.generateToken(savedUser));
     }
 
     public AuthResponseDTO login(LoginRequestDTO requestDTO) {
@@ -69,9 +73,9 @@ public class AuthenticationService {
         Long customerId = customerRepository.findByUserId(user.getId())
                 .map(Customer::getId)
                 .orElse(null);
-        return responseDtoMapper.toAuthResponseDTO("Authentication successful", user, customerId);
+        return responseDtoMapper.toAuthResponseDTO(
+                "Authentication successful", user, customerId, jwtService.generateToken(user));
     }
 }
-
 
 
