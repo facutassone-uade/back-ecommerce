@@ -4,7 +4,7 @@ API REST de un e-commerce hecha con Spring Boot. Proyecto de la cátedra Aplicac
 
 ## Características principales
 
-- **Autenticación**: HTTP Basic Authentication para proteger endpoints
+- **Autenticación**: JWT Bearer tokens para proteger endpoints
 - **Autorización basada en roles**: ADMIN (operaciones administrativas), USER (cliente regular), PUBLIC (registro y login)
 - **Gestión de productos y categorías**: CRUD completo con asociaciones
 - **Carrito de compras**: Agregar/eliminar items, validación de stock, checkout
@@ -13,7 +13,17 @@ API REST de un e-commerce hecha con Spring Boot. Proyecto de la cátedra Aplicac
 
 ## Autenticación y Autorización
 
-La API utiliza **HTTP Basic Authentication** para proteger endpoints. Cada request debe incluir credenciales en el header `Authorization`.
+La API utiliza **JWT** para proteger endpoints. Después de registrarse o iniciar sesión, la respuesta incluye un `token`. Para acceder a una ruta protegida, enviá ese token en el header `Authorization`:
+
+```http
+Authorization: Bearer <token>
+```
+
+El token dura una hora por defecto. Antes de levantar la aplicación, configurá `JWT_SECRET` con una clave única de al menos 32 caracteres. La duración se puede configurar con `JWT_EXPIRATION_MS`.
+
+```bash
+export JWT_SECRET="una-clave-local-de-al-menos-32-caracteres"
+```
 
 ### Roles disponibles
 
@@ -29,8 +39,6 @@ La API utiliza **HTTP Basic Authentication** para proteger endpoints. Cada reque
 |--------|------|-----|------------|
 | POST | `/api/auth/register` | PUBLIC | Registrar nueva cuenta |
 | POST | `/api/auth/login` | PUBLIC | Iniciar sesión |
-| GET | `/api/auth/me` | USER / ADMIN | Obtener perfil actual |
-| POST | `/api/auth/logout` | USER / ADMIN | Cerrar sesión |
 
 ### Credenciales de prueba
 
@@ -313,4 +321,3 @@ Estos usuarios se crean automáticamente para pruebas:
 Cada usuario tiene un cliente asociado con dirección de ejemplo.
 
 Verás mensajes `✓` en la consola confirmar la carga de datos.
-
