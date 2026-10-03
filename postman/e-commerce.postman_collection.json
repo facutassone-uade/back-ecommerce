@@ -1,30 +1,120 @@
 {
 	"info": {
 		"name": "e-commerce",
-		"description": "API REST collection for e-commerce project (Spring Boot). Use the {{baseUrl}} variable (default http://localhost:8080). The application uses HTTP Basic authentication for protected endpoints. Update the variables according to your environment before running authenticated requests. All endpoints are role-based: ADMIN for administrative operations, USER for customer operations.",
+		"description": "API REST collection for e-commerce project (Spring Boot). The existing requests use HTTP Basic authentication for compatibility. The JWT folder contains new Bearer Token requests for the current authentication flow.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [
-		{ "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
-		{ "key": "adminEmail", "value": "admin@example.invalid", "type": "string" },
-		{ "key": "adminPassword", "value": "change-me-admin", "type": "string" },
-		{ "key": "userEmail", "value": "user@example.invalid", "type": "string" },
-		{ "key": "userPassword", "value": "change-me-user", "type": "string" },
-		{ "key": "secondUserEmail", "value": "user2@example.invalid", "type": "string" },
-		{ "key": "secondUserPassword", "value": "change-me-user-2", "type": "string" },
-		{ "key": "adminUserId", "value": "1", "type": "string" },
-		{ "key": "adminCustomerId", "value": "1", "type": "string" },
-		{ "key": "userId", "value": "2", "type": "string" },
-		{ "key": "userCustomerId", "value": "2", "type": "string" },
-		{ "key": "secondUserId", "value": "3", "type": "string" },
-		{ "key": "secondUserCustomerId", "value": "3", "type": "string" },
-		{ "key": "productId", "value": "1", "type": "string" },
-		{ "key": "categoryId", "value": "1", "type": "string" },
-		{ "key": "customerId", "value": "2", "type": "string" },
-		{ "key": "cartId", "value": "1", "type": "string" },
-		{ "key": "cartItemId", "value": "1", "type": "string" },
-		{ "key": "orderId", "value": "1", "type": "string" },
-		{ "key": "orderItemId", "value": "1", "type": "string" }
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "adminEmail",
+			"value": "admin@example.invalid",
+			"type": "string"
+		},
+		{
+			"key": "adminPassword",
+			"value": "change-me-admin",
+			"type": "string"
+		},
+		{
+			"key": "userEmail",
+			"value": "user@example.invalid",
+			"type": "string"
+		},
+		{
+			"key": "userPassword",
+			"value": "change-me-user",
+			"type": "string"
+		},
+		{
+			"key": "secondUserEmail",
+			"value": "user2@example.invalid",
+			"type": "string"
+		},
+		{
+			"key": "secondUserPassword",
+			"value": "change-me-user-2",
+			"type": "string"
+		},
+		{
+			"key": "adminUserId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "adminCustomerId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "2",
+			"type": "string"
+		},
+		{
+			"key": "userCustomerId",
+			"value": "2",
+			"type": "string"
+		},
+		{
+			"key": "secondUserId",
+			"value": "3",
+			"type": "string"
+		},
+		{
+			"key": "secondUserCustomerId",
+			"value": "3",
+			"type": "string"
+		},
+		{
+			"key": "productId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "categoryId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "customerId",
+			"value": "2",
+			"type": "string"
+		},
+		{
+			"key": "cartId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "cartItemId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "orderId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "orderItemId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "adminToken",
+			"value": "",
+			"type": "string"
+		}
 	],
 	"item": [
 		{
@@ -37,7 +127,10 @@
 					"request": {
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -45,10 +138,28 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/auth/register",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "auth", "register"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
 						}
-					}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const body = pm.response.json();",
+									"if (body.token) { pm.collectionVariables.set('authToken', body.token); }"
+								]
+							}
+						}
+					]
 				},
 				{
 					"name": "Login user",
@@ -56,7 +167,10 @@
 					"request": {
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -64,10 +178,28 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/auth/login",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "auth", "login"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
 						}
-					}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const body = pm.response.json();",
+									"if (body.token) { pm.collectionVariables.set('authToken', body.token); }"
+								]
+							}
+						}
+					]
 				},
 				{
 					"name": "Login admin",
@@ -75,7 +207,10 @@
 					"request": {
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -83,10 +218,28 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/auth/login",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "auth", "login"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
 						}
-					}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const body = pm.response.json();",
+									"if (body.token) { pm.collectionVariables.set('adminToken', body.token); }"
+								]
+							}
+						}
+					]
 				}
 			]
 		},
@@ -98,19 +251,17 @@
 					"name": "List products",
 					"description": "Role: ANY (USER or ADMIN). Retrieve all available products.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/products",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "products"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products"
+							]
 						}
 					}
 				},
@@ -118,19 +269,18 @@
 					"name": "Get product by id",
 					"description": "Role: ANY (USER or ADMIN). Retrieve a specific product by its ID.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/products/{{productId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "products", "{{productId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"{{productId}}"
+							]
 						}
 					}
 				},
@@ -139,15 +289,21 @@
 					"description": "Role: ADMIN. Create a new product.",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{adminEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{adminPassword}}", "type": "string" }
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
 							]
 						},
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -155,8 +311,13 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/products",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "products"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products"
+							]
 						}
 					}
 				},
@@ -165,15 +326,21 @@
 					"description": "Role: ADMIN. Update an existing product.",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{adminEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{adminPassword}}", "type": "string" }
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
 							]
 						},
 						"method": "PUT",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -181,8 +348,14 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/products/{{productId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "products", "{{productId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"{{productId}}"
+							]
 						}
 					}
 				},
@@ -191,18 +364,27 @@
 					"description": "Role: ADMIN. Delete a product.",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{adminEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{adminPassword}}", "type": "string" }
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
 							]
 						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/products/{{productId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "products", "{{productId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"{{productId}}"
+							]
 						}
 					}
 				},
@@ -211,18 +393,29 @@
 					"description": "Role: ADMIN. Assign a category to a product.",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{adminEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{adminPassword}}", "type": "string" }
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
 							]
 						},
 						"method": "POST",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/products/{{productId}}/categories/{{categoryId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "products", "{{productId}}", "categories", "{{categoryId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"{{productId}}",
+								"categories",
+								"{{categoryId}}"
+							]
 						}
 					}
 				},
@@ -231,18 +424,29 @@
 					"description": "Role: ADMIN. Remove a category from a product.",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{adminEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{adminPassword}}", "type": "string" }
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
 							]
 						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/products/{{productId}}/categories/{{categoryId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "products", "{{productId}}", "categories", "{{categoryId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"{{productId}}",
+								"categories",
+								"{{categoryId}}"
+							]
 						}
 					}
 				}
@@ -256,19 +460,17 @@
 					"name": "List categories",
 					"description": "Role: ANY (USER or ADMIN). Retrieve all product categories.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/categories",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "categories"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
 						}
 					}
 				},
@@ -276,19 +478,18 @@
 					"name": "Get category by id",
 					"description": "Role: ANY (USER or ADMIN). Retrieve a specific category by its ID.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/categories/{{categoryId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "categories", "{{categoryId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"{{categoryId}}"
+							]
 						}
 					}
 				},
@@ -297,15 +498,21 @@
 					"description": "Role: ADMIN. Create a new product category.",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{adminEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{adminPassword}}", "type": "string" }
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
 							]
 						},
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -313,8 +520,13 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/categories",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "categories"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
 						}
 					}
 				},
@@ -323,15 +535,21 @@
 					"description": "Role: ADMIN. Update an existing category.",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{adminEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{adminPassword}}", "type": "string" }
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
 							]
 						},
 						"method": "PUT",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -339,8 +557,14 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/categories/{{categoryId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "categories", "{{categoryId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"{{categoryId}}"
+							]
 						}
 					}
 				},
@@ -349,18 +573,27 @@
 					"description": "Role: ADMIN. Delete a product category.",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{adminEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{adminPassword}}", "type": "string" }
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
 							]
 						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/categories/{{categoryId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "categories", "{{categoryId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"{{categoryId}}"
+							]
 						}
 					}
 				}
@@ -374,19 +607,18 @@
 					"name": "Get customer by id",
 					"description": "Role: USER (own profile) or ADMIN (any profile). Retrieve customer details by ID.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/customers/{{customerId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "customers", "{{customerId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"customers",
+								"{{customerId}}"
+							]
 						}
 					}
 				},
@@ -394,16 +626,12 @@
 					"name": "Update customer",
 					"description": "Role: USER (own profile) or ADMIN (any profile). Update customer information.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "PUT",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -411,8 +639,14 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/customers/{{customerId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "customers", "{{customerId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"customers",
+								"{{customerId}}"
+							]
 						}
 					}
 				},
@@ -421,18 +655,27 @@
 					"description": "Role: ADMIN. Delete a customer account and associated data.",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{adminEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{adminPassword}}", "type": "string" }
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
 							]
 						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/customers/{{customerId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "customers", "{{customerId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"customers",
+								"{{customerId}}"
+							]
 						}
 					}
 				}
@@ -447,18 +690,26 @@
 					"description": "Role: ADMIN. Retrieve all orders in the system.",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{adminEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{adminPassword}}", "type": "string" }
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
 							]
 						},
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/orders",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "orders"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders"
+							]
 						}
 					}
 				},
@@ -466,19 +717,19 @@
 					"name": "List my orders",
 					"description": "Role: USER. Retrieve all orders for the current authenticated user.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/orders/user/{{userId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "orders", "user", "{{userId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"user",
+								"{{userId}}"
+							]
 						}
 					}
 				},
@@ -487,18 +738,27 @@
 					"description": "Role: ADMIN or USER (own order). Retrieve a specific order by its ID.",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{adminEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{adminPassword}}", "type": "string" }
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
 							]
 						},
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/orders/{{orderId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "orders", "{{orderId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"{{orderId}}"
+							]
 						}
 					}
 				},
@@ -506,16 +766,12 @@
 					"name": "Create order",
 					"description": "Role: USER. Create a new order (typically done via cart checkout).",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -523,8 +779,13 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/orders",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "orders"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders"
+							]
 						}
 					}
 				},
@@ -532,16 +793,12 @@
 					"name": "Update order",
 					"description": "Role: USER (own order) or ADMIN. Update order details.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "PUT",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -549,8 +806,14 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/orders/{{orderId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "orders", "{{orderId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"{{orderId}}"
+							]
 						}
 					}
 				},
@@ -558,19 +821,18 @@
 					"name": "Delete order",
 					"description": "Role: USER (own order) or ADMIN. Delete an order.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/orders/{{orderId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "orders", "{{orderId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"{{orderId}}"
+							]
 						}
 					}
 				},
@@ -578,16 +840,12 @@
 					"name": "Add item to order",
 					"description": "Role: USER (own order) or ADMIN. Add a product to an order.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -595,8 +853,15 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/orders/{{orderId}}/items",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "orders", "{{orderId}}", "items"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"{{orderId}}",
+								"items"
+							]
 						}
 					}
 				},
@@ -604,19 +869,20 @@
 					"name": "Remove item from order",
 					"description": "Role: USER (own order) or ADMIN. Remove a product from an order.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/orders/{{orderId}}/items/{{orderItemId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "orders", "{{orderId}}", "items", "{{orderItemId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"{{orderId}}",
+								"items",
+								"{{orderItemId}}"
+							]
 						}
 					}
 				}
@@ -630,19 +896,17 @@
 					"name": "List carts",
 					"description": "Role: USER. Retrieve all carts for the current user.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/carts",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "carts"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts"
+							]
 						}
 					}
 				},
@@ -650,19 +914,18 @@
 					"name": "Get cart by id",
 					"description": "Role: USER (own cart) or ADMIN. Retrieve a specific shopping cart.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/{{cartId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "carts", "{{cartId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"{{cartId}}"
+							]
 						}
 					}
 				},
@@ -670,16 +933,12 @@
 					"name": "Create cart",
 					"description": "Role: USER. Create a new shopping cart.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -687,8 +946,13 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/carts",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "carts"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts"
+							]
 						}
 					}
 				},
@@ -696,16 +960,12 @@
 					"name": "Update cart",
 					"description": "Role: USER (own cart) or ADMIN. Update cart details (dates, etc.).",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "PUT",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -713,8 +973,14 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/{{cartId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "carts", "{{cartId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"{{cartId}}"
+							]
 						}
 					}
 				},
@@ -722,19 +988,18 @@
 					"name": "Delete cart",
 					"description": "Role: USER (own cart) or ADMIN. Delete a shopping cart.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/{{cartId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "carts", "{{cartId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"{{cartId}}"
+							]
 						}
 					}
 				},
@@ -742,16 +1007,12 @@
 					"name": "Add item to cart",
 					"description": "Role: USER (own cart) or ADMIN. Add a product to the shopping cart. The customer ID is implicit from the cart ID.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -759,8 +1020,15 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/{{cartId}}/items",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "carts", "{{cartId}}", "items"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"{{cartId}}",
+								"items"
+							]
 						}
 					}
 				},
@@ -768,19 +1036,20 @@
 					"name": "Remove item from cart",
 					"description": "Role: USER (own cart) or ADMIN. Remove a product from the shopping cart.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/{{cartId}}/items/{{cartItemId}}",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "carts", "{{cartId}}", "items", "{{cartItemId}}"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"{{cartId}}",
+								"items",
+								"{{cartItemId}}"
+							]
 						}
 					}
 				},
@@ -788,19 +1057,19 @@
 					"name": "Clear cart",
 					"description": "Role: USER (own cart) or ADMIN. Remove all items from the shopping cart.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/{{cartId}}/items",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "carts", "{{cartId}}", "items"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"{{cartId}}",
+								"items"
+							]
 						}
 					}
 				},
@@ -808,16 +1077,12 @@
 					"name": "Checkout cart",
 					"description": "Role: USER (own cart) or ADMIN. Proceed to purchase. Validates stock for each item, decreases inventory, creates an order, and clears the cart. Returns 400 if cart is empty or insufficient stock.",
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{ "key": "username", "value": "{{userEmail}}", "type": "string" },
-								{ "key": "password", "value": "{{userPassword}}", "type": "string" }
-							]
-						},
 						"method": "POST",
 						"header": [
-							{ "key": "Content-Type", "value": "application/json" }
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
@@ -825,12 +1090,29 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/{{cartId}}/checkout",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "carts", "{{cartId}}", "checkout"]
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"{{cartId}}",
+								"checkout"
+							]
 						}
 					}
 				}
 			]
 		}
-	]
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{authToken}}",
+				"type": "string"
+			}
+		]
+	}
 }

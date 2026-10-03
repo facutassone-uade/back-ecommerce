@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleAccessDenied(AccessDeniedException ex,
             HttpServletRequest request) {
         String message = ex.getMessage() != null ? ex.getMessage() : "Access denied";
-        return build(HttpStatus.UNAUTHORIZED, message, request);
+        return build(HttpStatus.FORBIDDEN, message, request);
     }
 
     @ExceptionHandler({ ResourceNotFoundException.class, NoHandlerFoundException.class, NoResourceFoundException.class })
