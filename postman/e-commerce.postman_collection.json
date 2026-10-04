@@ -114,6 +114,16 @@
 			"key": "adminToken",
 			"value": "",
 			"type": "string"
+		},
+		{
+			"key": "disposableCustomerId",
+			"value": "4",
+			"type": "string"
+		},
+		{
+			"key": "disposableProductId",
+			"value": "4",
+			"type": "string"
 		}
 	],
 	"item": [
@@ -360,35 +370,6 @@
 					}
 				},
 				{
-					"name": "Delete product",
-					"description": "Role: ADMIN. Delete a product.",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{adminToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/products/{{productId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"products",
-								"{{productId}}"
-							]
-						}
-					}
-				},
-				{
 					"name": "Add category to product",
 					"description": "Role: ADMIN. Assign a category to a product.",
 					"request": {
@@ -446,6 +427,35 @@
 								"{{productId}}",
 								"categories",
 								"{{categoryId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete product",
+					"description": "Role: ADMIN. Deletes the disposable product created by \"Create product\" (not {{productId}}, which Orders/Carts need to stay around for their \"Add item\" examples).",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/{{disposableProductId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"{{disposableProductId}}"
 							]
 						}
 					}
@@ -652,7 +662,7 @@
 				},
 				{
 					"name": "Delete customer",
-					"description": "Role: ADMIN. Delete a customer account and associated data.",
+					"description": "Role: ADMIN. Deletes the disposable account created by \"Register user\" (not {{customerId}}, which Get/Update need to stay Juan for the ownership check to pass).",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -667,14 +677,14 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/customers/{{customerId}}",
+							"raw": "{{baseUrl}}/api/customers/{{disposableCustomerId}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"customers",
-								"{{customerId}}"
+								"{{disposableCustomerId}}"
 							]
 						}
 					}
@@ -734,6 +744,33 @@
 					}
 				},
 				{
+					"name": "Create order",
+					"description": "Role: USER. Create a new order (typically done via cart checkout).",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": {{userCustomerId}},\n  \"date\": \"2026-09-18\",\n  \"total\": 999.99,\n  \"paid\": true,\n  \"paymentMethod\": \"CREDIT_CARD\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders"
+							]
+						}
+					}
+				},
+				{
 					"name": "Get order by id",
 					"description": "Role: ADMIN or USER (own order). Retrieve a specific order by its ID.",
 					"request": {
@@ -763,33 +800,6 @@
 					}
 				},
 				{
-					"name": "Create order",
-					"description": "Role: USER. Create a new order (typically done via cart checkout).",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"customerId\": {{userCustomerId}},\n  \"date\": \"2026-09-18\",\n  \"total\": 999.99,\n  \"paid\": true,\n  \"paymentMethod\": \"CREDIT_CARD\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/orders",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"orders"
-							]
-						}
-					}
-				},
-				{
 					"name": "Update order",
 					"description": "Role: USER (own order) or ADMIN. Update order details.",
 					"request": {
@@ -804,25 +814,6 @@
 							"mode": "raw",
 							"raw": "{\n  \"customerId\": {{userCustomerId}},\n  \"date\": \"2026-09-18\",\n  \"total\": 999.99,\n  \"paid\": false,\n  \"paymentMethod\": \"DEBIT_CARD\"\n}"
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/orders/{{orderId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"orders",
-								"{{orderId}}"
-							]
-						}
-					}
-				},
-				{
-					"name": "Delete order",
-					"description": "Role: USER (own order) or ADMIN. Delete an order.",
-					"request": {
-						"method": "DELETE",
-						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/orders/{{orderId}}",
 							"host": [
@@ -885,6 +876,25 @@
 							]
 						}
 					}
+				},
+				{
+					"name": "Delete order",
+					"description": "Role: USER (own order) or ADMIN. Delete an order.",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/orders/{{orderId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"{{orderId}}"
+							]
+						}
+					}
 				}
 			]
 		},
@@ -906,25 +916,6 @@
 							"path": [
 								"api",
 								"carts"
-							]
-						}
-					}
-				},
-				{
-					"name": "Get cart by id",
-					"description": "Role: USER (own cart) or ADMIN. Retrieve a specific shopping cart.",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/carts/{{cartId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"carts",
-								"{{cartId}}"
 							]
 						}
 					}
@@ -957,20 +948,11 @@
 					}
 				},
 				{
-					"name": "Update cart",
-					"description": "Role: USER (own cart) or ADMIN. Update cart details (dates, etc.).",
+					"name": "Get cart by id",
+					"description": "Role: USER (own cart) or ADMIN. Retrieve a specific shopping cart.",
 					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"customerId\": {{userCustomerId}},\n  \"date\": \"2026-09-18\",\n  \"deliveryDate\": \"2026-09-27\"\n}"
-						},
+						"method": "GET",
+						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/{{cartId}}",
 							"host": [
@@ -985,11 +967,20 @@
 					}
 				},
 				{
-					"name": "Delete cart",
-					"description": "Role: USER (own cart) or ADMIN. Delete a shopping cart.",
+					"name": "Update cart",
+					"description": "Role: USER (own cart) or ADMIN. Update cart details (dates, etc.).",
 					"request": {
-						"method": "DELETE",
-						"header": [],
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": {{userCustomerId}},\n  \"date\": \"2026-09-18\",\n  \"deliveryDate\": \"2026-09-27\"\n}"
+						},
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/{{cartId}}",
 							"host": [
@@ -1054,11 +1045,20 @@
 					}
 				},
 				{
-					"name": "Clear cart",
-					"description": "Role: USER (own cart) or ADMIN. Remove all items from the shopping cart.",
+					"name": "Add item to cart (for checkout)",
+					"description": "Role: USER/ADMIN (owner only). Re-adds an item so Checkout cart has something to process.",
 					"request": {
-						"method": "DELETE",
-						"header": [],
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": {{productId}},\n  \"quantity\": 2\n}"
+						},
 						"url": {
 							"raw": "{{baseUrl}}/api/carts/{{cartId}}/items",
 							"host": [
@@ -1098,6 +1098,45 @@
 								"carts",
 								"{{cartId}}",
 								"checkout"
+							]
+						}
+					}
+				},
+				{
+					"name": "Clear cart",
+					"description": "Role: USER (own cart) or ADMIN. Remove all items from the shopping cart.",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/carts/{{cartId}}/items",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"{{cartId}}",
+								"items"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete cart",
+					"description": "Role: USER (own cart) or ADMIN. Delete a shopping cart.",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/carts/{{cartId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"carts",
+								"{{cartId}}"
 							]
 						}
 					}
