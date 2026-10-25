@@ -35,6 +35,8 @@ public class Product {
 
     private Integer stock;
 
+    private String imageUrl;
+
     @ManyToMany
     @JoinTable(
         name = "product_category",
