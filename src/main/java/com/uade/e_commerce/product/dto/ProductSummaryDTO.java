@@ -18,4 +18,6 @@ public class ProductSummaryDTO {
     private Double price;
 
     private Integer stock;
+
+    private String imageUrl;
 }

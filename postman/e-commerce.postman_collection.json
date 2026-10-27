@@ -317,7 +317,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"Laptop 15 inches\",\n  \"description\": \"High-performance laptop with 15-inch display\",\n  \"price\": 999.99,\n  \"stock\": 10\n}"
+							"raw": "{\n  \"name\": \"Laptop 15 inches\",\n  \"description\": \"High-performance laptop with 15-inch display\",\n  \"price\": 999.99,\n  \"stock\": 10,\n  \"imageUrl\": \"https://images.pexels.com/photos/18105/pexels-photo.jpg\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/products",
@@ -354,7 +354,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"Laptop 15 inches\",\n  \"description\": \"High-performance laptop with 15-inch display - Updated\",\n  \"price\": 949.99,\n  \"stock\": 8\n}"
+							"raw": "{\n  \"name\": \"Laptop 15 inches\",\n  \"description\": \"High-performance laptop with 15-inch display - Updated\",\n  \"price\": 949.99,\n  \"stock\": 8,\n  \"imageUrl\": \"https://images.pexels.com/photos/18105/pexels-photo.jpg\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/products/{{productId}}",

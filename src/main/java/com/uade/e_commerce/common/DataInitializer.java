@@ -1,6 +1,7 @@
 package com.uade.e_commerce.common;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -100,42 +101,96 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void initializeCategories() {
-        Category electronics = new Category();
-        electronics.setName("Electronics");
+        Category hogar = new Category();
+        hogar.setName("Hogar");
 
-        Category clothes = new Category();
-        clothes.setName("Clothes");
+        Category cocina = new Category();
+        cocina.setName("Cocina");
 
-        Category books = new Category();
-        books.setName("Books");
+        Category banio = new Category();
+        banio.setName("Baño");
 
-        categoryRepository.saveAll(Arrays.asList(electronics, clothes, books));
+        categoryRepository.saveAll(Arrays.asList(hogar, cocina, banio));
     }
 
     private void initializeProducts() {
-        var categories = categoryRepository.findAll();
+        List<Category> categories = categoryRepository.findAll();
+        Category hogar = categories.stream().filter(category -> "Hogar".equals(category.getName())).findFirst().orElse(null);
+        Category cocina = categories.stream().filter(category -> "Cocina".equals(category.getName())).findFirst().orElse(null);
+        Category banio = categories.stream().filter(category -> "Baño".equals(category.getName())).findFirst().orElse(null);
 
-        Product laptop = new Product();
-        laptop.setName("Dell Laptop");
-        laptop.setDescription("15 inch laptop");
-        laptop.setPrice(1200.00);
-        laptop.setStock(10);
-        laptop.setCategories(categories);
+        Product jarron = new Product();
+        jarron.setName("Jarrón decorativo");
+        jarron.setDescription("Jarrón de cerámica con diseño artesanal para decorar cualquier espacio");
+        jarron.setPrice(1850.00);
+        jarron.setStock(12);
+        jarron.setImageUrl("https://images.pexels.com/photos/28991198/pexels-photo-28991198.jpeg");
+        jarron.setCategories(List.of(hogar));
 
-        Product mouse = new Product();
-        mouse.setName("Logitech Mouse");
-        mouse.setDescription("Wireless mouse");
-        mouse.setPrice(35.00);
-        mouse.setStock(50);
-        mouse.setCategories(categories);
+        Product vela = new Product();
+        vela.setName("Vela aromática");
+        vela.setDescription("Vela con aroma suave para crear un ambiente cálido y relajante");
+        vela.setPrice(1200.00);
+        vela.setStock(18);
+        vela.setImageUrl("https://images.pexels.com/photos/29737854/pexels-photo-29737854.jpeg");
+        vela.setCategories(List.of(hogar));
 
-        Product shirt = new Product();
-        shirt.setName("Basic T-Shirt");
-        shirt.setDescription("Cotton t-shirt");
-        shirt.setPrice(25.00);
-        shirt.setStock(100);
-        shirt.setCategories(categories);
+        Product cuadro = new Product();
+        cuadro.setName("Cuadro decorativo de madera");
+        cuadro.setDescription("Cuadro rústico de madera para aportar estilo y calidez a la pared");
+        cuadro.setPrice(2100.00);
+        cuadro.setStock(8);
+        cuadro.setImageUrl("https://images.pexels.com/photos/6618329/pexels-photo-6618329.jpeg");
+        cuadro.setCategories(List.of(hogar));
 
-        productRepository.saveAll(Arrays.asList(laptop, mouse, shirt));
+        Product cuencos = new Product();
+        cuencos.setName("Set de cuencos de cerámica");
+        cuencos.setDescription("Set de cuencos de cerámica en tonos neutros para cocina y servicio diario");
+        cuencos.setPrice(3200.00);
+        cuencos.setStock(10);
+        cuencos.setImageUrl("https://images.pexels.com/photos/14320922/pexels-photo-14320922.jpeg");
+        cuencos.setCategories(List.of(cocina));
+
+        Product frasco = new Product();
+        frasco.setName("Frasco de almacenamiento");
+        frasco.setDescription("Frasco hermético para guardar cereales, harinas o legumbres con orden");
+        frasco.setPrice(1450.00);
+        frasco.setStock(20);
+        frasco.setImageUrl("https://images.pexels.com/photos/7263025/pexels-photo-7263025.jpeg");
+        frasco.setCategories(List.of(cocina));
+
+        Product tabla = new Product();
+        tabla.setName("Tabla de corte de madera");
+        tabla.setDescription("Tabla resistente de madera ideal para preparar alimentos y decorar la cocina");
+        tabla.setPrice(2600.00);
+        tabla.setStock(14);
+        tabla.setImageUrl("https://images.pexels.com/photos/5964663/pexels-photo-5964663.jpeg");
+        tabla.setCategories(List.of(cocina));
+
+        Product toallas = new Product();
+        toallas.setName("Juego de toallas de algodón");
+        toallas.setDescription("Toallas suaves y absorbentes para un baño cómodo y elegante");
+        toallas.setPrice(2900.00);
+        toallas.setStock(15);
+        toallas.setImageUrl("https://images.pexels.com/photos/7691101/pexels-photo-7691101.jpeg");
+        toallas.setCategories(List.of(banio));
+
+        Product dispensador = new Product();
+        dispensador.setName("Dispensador de jabón");
+        dispensador.setDescription("Dispensador práctico para baño con diseño moderno y funcional");
+        dispensador.setPrice(2400.00);
+        dispensador.setStock(9);
+        dispensador.setImageUrl("https://images.pexels.com/photos/4008464/pexels-photo-4008464.jpeg");
+        dispensador.setCategories(List.of(banio));
+
+        Product canasto = new Product();
+        canasto.setName("Canasto organizador");
+        canasto.setDescription("Canasto de almacenamiento para ordenar toallas, productos y accesorios del baño");
+        canasto.setPrice(1750.00);
+        canasto.setStock(11);
+        canasto.setImageUrl("https://images.pexels.com/photos/31390662/pexels-photo-31390662.jpeg");
+        canasto.setCategories(List.of(banio));
+
+        productRepository.saveAll(Arrays.asList(jarron, vela, cuadro, cuencos, frasco, tabla, toallas, dispensador, canasto));
     }
 }

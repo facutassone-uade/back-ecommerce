@@ -126,7 +126,27 @@ public class ResponseDtoMapper {
         productDTO.setName(product.getName());
         productDTO.setPrice(product.getPrice());
         productDTO.setStock(product.getStock());
+        productDTO.setImageUrl(product.getImageUrl());
         return productDTO;
+    }
+
+    public ProductResponseDTO toProductResponseDTO(Product product) {
+        if (product == null) {
+            return null;
+        }
+        ProductResponseDTO responseDTO = new ProductResponseDTO();
+        responseDTO.setId(product.getId());
+        responseDTO.setName(product.getName());
+        responseDTO.setDescription(product.getDescription());
+        responseDTO.setPrice(product.getPrice());
+        responseDTO.setStock(product.getStock());
+        responseDTO.setImageUrl(product.getImageUrl());
+        if (product.getCategories() != null) {
+            responseDTO.setCategories(product.getCategories().stream()
+                    .map(this::toCategoryResponseDTO)
+                    .toList());
+        }
+        return responseDTO;
     }
 
     public CustomerSummaryDTO toCustomerSummaryDTO(Customer customer) {
@@ -180,23 +200,5 @@ public class ResponseDtoMapper {
         categoryDTO.setId(category.getId());
         categoryDTO.setName(category.getName());
         return categoryDTO;
-    }
-
-    public ProductResponseDTO toProductResponseDTO(Product product) {
-        if (product == null) {
-            return null;
-        }
-        ProductResponseDTO responseDTO = new ProductResponseDTO();
-        responseDTO.setId(product.getId());
-        responseDTO.setName(product.getName());
-        responseDTO.setDescription(product.getDescription());
-        responseDTO.setPrice(product.getPrice());
-        responseDTO.setStock(product.getStock());
-        if (product.getCategories() != null) {
-            responseDTO.setCategories(product.getCategories().stream()
-                    .map(this::toCategoryResponseDTO)
-                    .toList());
-        }
-        return responseDTO;
     }
 }
