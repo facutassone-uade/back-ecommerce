@@ -1,5 +1,7 @@
 package com.uade.e_commerce.customer;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +24,11 @@ public class CustomerController {
 
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CustomerResponseDTO>> list() {
+        return ResponseEntity.ok(customerService.list());
     }
 
     @GetMapping("/{id}")

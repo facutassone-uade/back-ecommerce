@@ -12,6 +12,8 @@ import lombok.Setter;
 public class CustomerResponseDTO {
 
     private Long id;
+    private String name;
+    private String lastName;
     private Long nationalId;
     private Long phone;
     private AddressDTO address;

@@ -614,6 +614,34 @@
 			"description": "Customer profile management. User registration is done via /api/auth/register. Customers can view and update their own profile. Admins can manage all customer data.",
 			"item": [
 				{
+					"name": "List customers",
+					"description": "Role: ADMIN. Retrieve all customers with their user's first and last name.",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/customers",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"customers"
+							]
+						}
+					}
+				},
+				{
 					"name": "Get customer by id",
 					"description": "Role: USER (own profile) or ADMIN (any profile). Retrieve customer details by ID.",
 					"request": {
