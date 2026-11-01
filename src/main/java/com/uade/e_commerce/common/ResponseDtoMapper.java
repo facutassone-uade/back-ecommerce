@@ -49,6 +49,10 @@ public class ResponseDtoMapper {
         }
         CustomerResponseDTO responseDTO = new CustomerResponseDTO();
         responseDTO.setId(customer.getId());
+        if (customer.getUser() != null) {
+            responseDTO.setName(customer.getUser().getFirstName());
+            responseDTO.setLastName(customer.getUser().getLastName());
+        }
         responseDTO.setNationalId(customer.getNationalId());
         responseDTO.setPhone(customer.getPhone());
         responseDTO.setAddress(addressEntityToDTO(customer.getAddress()));

@@ -1,5 +1,7 @@
 package com.uade.e_commerce.customer;
 
+import java.util.List;
+
 import com.uade.e_commerce.auth.User;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -29,6 +31,12 @@ public class CustomerService {
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
         this.responseDtoMapper = responseDtoMapper;
+    }
+
+    public List<CustomerResponseDTO> list() {
+        return customerRepository.findAll().stream()
+                .map(responseDtoMapper::toCustomerResponseDTO)
+                .toList();
     }
 
     public CustomerResponseDTO findResponseById(Long id) {
