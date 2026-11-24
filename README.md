@@ -13,13 +13,15 @@ API REST de un e-commerce hecha con Spring Boot. Proyecto de la cátedra Aplicac
 
 ## Autenticación y Autorización
 
-La API utiliza **JWT** para proteger endpoints. Después de registrarse o iniciar sesión, la respuesta incluye un `token`. Para acceder a una ruta protegida, enviá ese token en el header `Authorization`:
+La API utiliza **JWT** para proteger endpoints. Al registrarse o iniciar sesión, el token se devuelve en una cookie `token` con `HttpOnly`, `SameSite=Strict` y `Path=/api` (no viene en el body). El navegador la manda sola en cada request, así que el front no maneja el token. `POST /api/auth/logout` borra la cookie y `GET /api/auth/me` devuelve los datos del usuario logueado.
+
+Para clientes que no usan cookies (por ejemplo Postman), también se acepta el token en el header `Authorization`. La colección de Postman lo toma de la cookie después del login:
 
 ```http
 Authorization: Bearer <token>
 ```
 
-El token dura una hora por defecto. Antes de levantar la aplicación, configurá `JWT_SECRET` con una clave única de al menos 32 caracteres. La duración se puede configurar con `JWT_EXPIRATION_MS`.
+El token dura una hora por defecto. Antes de levantar la aplicación, configurá `JWT_SECRET` con una clave única de al menos 32 caracteres. La duración se puede configurar con `JWT_EXPIRATION_MS`. En producción (HTTPS) configurá `JWT_COOKIE_SECURE=true` para que la cookie solo viaje cifrada.
 
 ```bash
 export JWT_SECRET="una-clave-local-de-al-menos-32-caracteres"

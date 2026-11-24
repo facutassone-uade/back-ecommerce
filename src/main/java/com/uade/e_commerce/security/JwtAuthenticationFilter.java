@@ -3,6 +3,7 @@ package com.uade.e_commerce.security;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,54 +30,68 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final ObjectMapper objectMapper;
+    private final JwtCookieService jwtCookieService;
 
     public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper, JwtCookieService jwtCookieService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
         this.objectMapper = objectMapper;
+        this.jwtCookieService = jwtCookieService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        // El front manda el token en la cookie httpOnly; Postman u otros clientes pueden seguir usando el header
         String authorizationHeader = request.getHeader("Authorization");
+        boolean desdeHeader = authorizationHeader != null && authorizationHeader.startsWith("Bearer ");
+        String token = desdeHeader ? authorizationHeader.substring(7).trim() : jwtCookieService.leer(request);
 
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+        if (token == null) {
             filterChain.doFilter(request, response);
             return;
         }
-
-        String token = authorizationHeader.substring(7).trim();
         if (token.isEmpty()) {
             writeUnauthorized(request, response, "Bearer token is missing");
             return;
         }
 
-        try {
-            String username = jwtService.extractUsername(token);
-            if (username == null || username.isBlank()) {
+        if (!autenticar(token, request)) {
+            if (desdeHeader) {
                 writeUnauthorized(request, response, "Invalid or expired token");
                 return;
             }
-            if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                if (jwtService.isTokenValid(token, userDetails)) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else {
-                    writeUnauthorized(request, response, "Invalid or expired token");
-                    return;
-                }
-            }
-        } catch (JwtException | IllegalArgumentException | UsernameNotFoundException exception) {
-            writeUnauthorized(request, response, "Invalid or expired token");
-            return;
+            // Cookie con un token inválido (por ejemplo, firmado con otro secreto): la borramos y seguimos
+            // como anónimo, así los endpoints públicos (login, catálogo) siguen andando. Los protegidos
+            // responden 401 desde el authenticationEntryPoint de SecurityConfig.
+            response.addHeader(HttpHeaders.SET_COOKIE, jwtCookieService.borrar().toString());
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean autenticar(String token, HttpServletRequest request) {
+        try {
+            String username = jwtService.extractUsername(token);
+            if (username == null || username.isBlank()) {
+                return false;
+            }
+            if (SecurityContextHolder.getContext().getAuthentication() != null) {
+                return true;
+            }
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if (!jwtService.isTokenValid(token, userDetails)) {
+                return false;
+            }
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities());
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            return true;
+        } catch (JwtException | IllegalArgumentException | UsernameNotFoundException exception) {
+            return false;
+        }
     }
 
     private void writeUnauthorized(HttpServletRequest request, HttpServletResponse response, String message)

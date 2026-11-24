@@ -165,7 +165,8 @@
 								"type": "text/javascript",
 								"exec": [
 									"const body = pm.response.json();",
-									"if (body.token) { pm.collectionVariables.set('authToken', body.token); }"
+									"const token = pm.cookies.get('token'); // el JWT viene en la cookie httpOnly",
+									"if (token) { pm.collectionVariables.set('authToken', token); }"
 								]
 							}
 						}
@@ -205,7 +206,8 @@
 								"type": "text/javascript",
 								"exec": [
 									"const body = pm.response.json();",
-									"if (body.token) { pm.collectionVariables.set('authToken', body.token); }"
+									"const token = pm.cookies.get('token'); // el JWT viene en la cookie httpOnly",
+									"if (token) { pm.collectionVariables.set('authToken', token); }"
 								]
 							}
 						}
@@ -245,7 +247,8 @@
 								"type": "text/javascript",
 								"exec": [
 									"const body = pm.response.json();",
-									"if (body.token) { pm.collectionVariables.set('adminToken', body.token); }"
+									"const token = pm.cookies.get('token'); // el JWT viene en la cookie httpOnly",
+									"if (token) { pm.collectionVariables.set('adminToken', token); }"
 								]
 							}
 						}

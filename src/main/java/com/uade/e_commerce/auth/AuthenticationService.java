@@ -76,6 +76,14 @@ public class AuthenticationService {
         return responseDtoMapper.toAuthResponseDTO(
                 "Authentication successful", user, customerId, jwtService.generateToken(user));
     }
+
+    @Transactional(readOnly = true)
+    public AuthResponseDTO me(User user) {
+        Long customerId = customerRepository.findByUserId(user.getId())
+                .map(Customer::getId)
+                .orElse(null);
+        return responseDtoMapper.toAuthResponseDTO("Authenticated", user, customerId, null);
+    }
 }
 
 

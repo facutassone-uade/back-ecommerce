@@ -1,5 +1,7 @@
 package com.uade.e_commerce.auth.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,5 +22,7 @@ public class AuthResponseDTO {
     private String lastName;
     private String email;
     private String role;
+    // El token viaja en una cookie httpOnly (ver JwtCookieService), no en el body
+    @JsonIgnore
     private String token;
 }
