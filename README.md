@@ -4,7 +4,7 @@ API REST de un e-commerce hecha con Spring Boot. Proyecto de la cátedra Aplicac
 
 ## Características principales
 
-- **Autenticación**: JWT Bearer tokens para proteger endpoints
+- **Autenticación**: JWT en una cookie httpOnly para proteger endpoints
 - **Autorización basada en roles**: ADMIN (operaciones administrativas), USER (cliente regular), PUBLIC (registro y login)
 - **Gestión de productos y categorías**: CRUD completo con asociaciones
 - **Carrito de compras**: Agregar/eliminar items, validación de stock, checkout
@@ -15,11 +15,7 @@ API REST de un e-commerce hecha con Spring Boot. Proyecto de la cátedra Aplicac
 
 La API utiliza **JWT** para proteger endpoints. Al registrarse o iniciar sesión, el token se devuelve en una cookie `token` con `HttpOnly`, `SameSite=Strict` y `Path=/api` (no viene en el body). El navegador la manda sola en cada request, así que el front no maneja el token. `POST /api/auth/logout` borra la cookie y `GET /api/auth/me` devuelve los datos del usuario logueado.
 
-Para clientes que no usan cookies (por ejemplo Postman), también se acepta el token en el header `Authorization`. La colección de Postman lo toma de la cookie después del login:
-
-```http
-Authorization: Bearer <token>
-```
+El back solo lee el token de esa cookie (no acepta el header `Authorization`). En la colección de Postman, los requests de login guardan el valor de la cookie en `authToken` / `adminToken` y cada request lo manda en el header `Cookie: token=...`.
 
 El token dura una hora por defecto. Antes de levantar la aplicación, configurá `JWT_SECRET` con una clave única de al menos 32 caracteres. La duración se puede configurar con `JWT_EXPIRATION_MS`. En producción (HTTPS) configurá `JWT_COOKIE_SECURE=true` para que la cookie solo viaje cifrada.
 

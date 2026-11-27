@@ -87,7 +87,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowedHeaders(List.of("Content-Type"));
         // Permite que el navegador mande la cookie httpOnly con el JWT si el front llama directo al back
         // (sin el proxy de Vite). Requiere orígenes explícitos, no "*".
         config.setAllowCredentials(true);

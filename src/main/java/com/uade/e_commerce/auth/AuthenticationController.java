@@ -33,7 +33,7 @@ public class AuthenticationController {
     public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody RegisterRequestDTO requestDTO) {
         AuthResponseDTO auth = authenticationService.register(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header(HttpHeaders.SET_COOKIE, jwtCookieService.crear(auth.getToken()).toString())
+                .header(HttpHeaders.SET_COOKIE, jwtCookieService.createCookie(auth.getToken()).toString())
                 .body(auth);
     }
 
@@ -41,7 +41,7 @@ public class AuthenticationController {
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO requestDTO) {
         AuthResponseDTO auth = authenticationService.login(requestDTO);
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, jwtCookieService.crear(auth.getToken()).toString())
+                .header(HttpHeaders.SET_COOKIE, jwtCookieService.createCookie(auth.getToken()).toString())
                 .body(auth);
     }
 
@@ -49,13 +49,13 @@ public class AuthenticationController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         return ResponseEntity.noContent()
-                .header(HttpHeaders.SET_COOKIE, jwtCookieService.borrar().toString())
+                .header(HttpHeaders.SET_COOKIE, jwtCookieService.clearCookie().toString())
                 .build();
     }
 
     // Datos del usuario de la cookie: el front lo usa al cargar la página para saber si la sesión sigue activa
     @GetMapping("/me")
     public ResponseEntity<AuthResponseDTO> me(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(authenticationService.me(user));
+        return ResponseEntity.ok(authenticationService.getCurrentUser(user));
     }
 }

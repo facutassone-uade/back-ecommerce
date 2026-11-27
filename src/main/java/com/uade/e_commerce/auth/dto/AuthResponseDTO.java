@@ -22,7 +22,7 @@ public class AuthResponseDTO {
     private String lastName;
     private String email;
     private String role;
-    // El token viaja en una cookie httpOnly (ver JwtCookieService), no en el body
+    // El token viaja en la cookie httpOnly (ver JwtCookieService), no en el body
     @JsonIgnore
     private String token;
 }

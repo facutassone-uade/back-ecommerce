@@ -1,7 +1,7 @@
 {
 	"info": {
 		"name": "e-commerce",
-		"description": "API REST collection for e-commerce project (Spring Boot). The existing requests use HTTP Basic authentication for compatibility. The JWT folder contains new Bearer Token requests for the current authentication flow.",
+		"description": "API REST collection for e-commerce project (Spring Boot). Authentication uses a JWT in an httpOnly cookie named token. The login requests save the cookie value in authToken / adminToken and each request sends it in the Cookie header (collection auth, or the admin auth on admin-only requests).",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [
@@ -166,7 +166,9 @@
 								"exec": [
 									"const body = pm.response.json();",
 									"const token = pm.cookies.get('token'); // el JWT viene en la cookie httpOnly",
-									"if (token) { pm.collectionVariables.set('authToken', token); }"
+									"if (token) { pm.collectionVariables.set('authToken', token); }",
+									"// Se saca del cookie jar: cada request manda su propia cookie (usuario o admin) desde la auth de la colección",
+									"pm.cookies.jar().unset(pm.request.url.toString(), 'token');"
 								]
 							}
 						}
@@ -207,7 +209,9 @@
 								"exec": [
 									"const body = pm.response.json();",
 									"const token = pm.cookies.get('token'); // el JWT viene en la cookie httpOnly",
-									"if (token) { pm.collectionVariables.set('authToken', token); }"
+									"if (token) { pm.collectionVariables.set('authToken', token); }",
+									"// Se saca del cookie jar: cada request manda su propia cookie (usuario o admin) desde la auth de la colección",
+									"pm.cookies.jar().unset(pm.request.url.toString(), 'token');"
 								]
 							}
 						}
@@ -248,7 +252,9 @@
 								"exec": [
 									"const body = pm.response.json();",
 									"const token = pm.cookies.get('token'); // el JWT viene en la cookie httpOnly",
-									"if (token) { pm.collectionVariables.set('adminToken', token); }"
+									"if (token) { pm.collectionVariables.set('adminToken', token); }",
+									"// Se saca del cookie jar: cada request manda su propia cookie (usuario o admin) desde la auth de la colección",
+									"pm.cookies.jar().unset(pm.request.url.toString(), 'token');"
 								]
 							}
 						}
@@ -302,11 +308,21 @@
 					"description": "Role: ADMIN. Create a new product.",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
+							"type": "apikey",
+							"apikey": [
 								{
-									"key": "token",
-									"value": "{{adminToken}}",
+									"key": "key",
+									"value": "Cookie",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "token={{adminToken}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
 									"type": "string"
 								}
 							]
@@ -339,11 +355,21 @@
 					"description": "Role: ADMIN. Update an existing product.",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
+							"type": "apikey",
+							"apikey": [
 								{
-									"key": "token",
-									"value": "{{adminToken}}",
+									"key": "key",
+									"value": "Cookie",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "token={{adminToken}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
 									"type": "string"
 								}
 							]
@@ -377,11 +403,21 @@
 					"description": "Role: ADMIN. Assign a category to a product.",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
+							"type": "apikey",
+							"apikey": [
 								{
-									"key": "token",
-									"value": "{{adminToken}}",
+									"key": "key",
+									"value": "Cookie",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "token={{adminToken}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
 									"type": "string"
 								}
 							]
@@ -408,11 +444,21 @@
 					"description": "Role: ADMIN. Remove a category from a product.",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
+							"type": "apikey",
+							"apikey": [
 								{
-									"key": "token",
-									"value": "{{adminToken}}",
+									"key": "key",
+									"value": "Cookie",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "token={{adminToken}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
 									"type": "string"
 								}
 							]
@@ -439,11 +485,21 @@
 					"description": "Role: ADMIN. Deletes the disposable product created by \"Create product\" (not {{productId}}, which Orders/Carts need to stay around for their \"Add item\" examples).",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
+							"type": "apikey",
+							"apikey": [
 								{
-									"key": "token",
-									"value": "{{adminToken}}",
+									"key": "key",
+									"value": "Cookie",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "token={{adminToken}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
 									"type": "string"
 								}
 							]
@@ -511,11 +567,21 @@
 					"description": "Role: ADMIN. Create a new product category.",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
+							"type": "apikey",
+							"apikey": [
 								{
-									"key": "token",
-									"value": "{{adminToken}}",
+									"key": "key",
+									"value": "Cookie",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "token={{adminToken}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
 									"type": "string"
 								}
 							]
@@ -548,11 +614,21 @@
 					"description": "Role: ADMIN. Update an existing category.",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
+							"type": "apikey",
+							"apikey": [
 								{
-									"key": "token",
-									"value": "{{adminToken}}",
+									"key": "key",
+									"value": "Cookie",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "token={{adminToken}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
 									"type": "string"
 								}
 							]
@@ -586,11 +662,21 @@
 					"description": "Role: ADMIN. Delete a product category.",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
+							"type": "apikey",
+							"apikey": [
 								{
-									"key": "token",
-									"value": "{{adminToken}}",
+									"key": "key",
+									"value": "Cookie",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "token={{adminToken}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
 									"type": "string"
 								}
 							]
@@ -621,11 +707,21 @@
 					"description": "Role: ADMIN. Retrieve all customers with their user's first and last name.",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
+							"type": "apikey",
+							"apikey": [
 								{
-									"key": "token",
-									"value": "{{adminToken}}",
+									"key": "key",
+									"value": "Cookie",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "token={{adminToken}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
 									"type": "string"
 								}
 							]
@@ -696,11 +792,21 @@
 					"description": "Role: ADMIN. Deletes the disposable account created by \"Register user\" (not {{customerId}}, which Get/Update need to stay Juan for the ownership check to pass).",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
+							"type": "apikey",
+							"apikey": [
 								{
-									"key": "token",
-									"value": "{{adminToken}}",
+									"key": "key",
+									"value": "Cookie",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "token={{adminToken}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
 									"type": "string"
 								}
 							]
@@ -731,11 +837,21 @@
 					"description": "Role: ADMIN. Retrieve all orders in the system.",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
+							"type": "apikey",
+							"apikey": [
 								{
-									"key": "token",
-									"value": "{{adminToken}}",
+									"key": "key",
+									"value": "Cookie",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "token={{adminToken}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
 									"type": "string"
 								}
 							]
@@ -806,11 +922,21 @@
 					"description": "Role: ADMIN or USER (own order). Retrieve a specific order by its ID.",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
+							"type": "apikey",
+							"apikey": [
 								{
-									"key": "token",
-									"value": "{{adminToken}}",
+									"key": "key",
+									"value": "Cookie",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "token={{adminToken}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
 									"type": "string"
 								}
 							]
@@ -1176,11 +1302,21 @@
 		}
 	],
 	"auth": {
-		"type": "bearer",
-		"bearer": [
+		"type": "apikey",
+		"apikey": [
 			{
-				"key": "token",
-				"value": "{{authToken}}",
+				"key": "key",
+				"value": "Cookie",
+				"type": "string"
+			},
+			{
+				"key": "value",
+				"value": "token={{authToken}}",
+				"type": "string"
+			},
+			{
+				"key": "in",
+				"value": "header",
 				"type": "string"
 			}
 		]

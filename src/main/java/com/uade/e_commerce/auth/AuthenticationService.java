@@ -78,7 +78,7 @@ public class AuthenticationService {
     }
 
     @Transactional(readOnly = true)
-    public AuthResponseDTO me(User user) {
+    public AuthResponseDTO getCurrentUser(User user) {
         Long customerId = customerRepository.findByUserId(user.getId())
                 .map(Customer::getId)
                 .orElse(null);
